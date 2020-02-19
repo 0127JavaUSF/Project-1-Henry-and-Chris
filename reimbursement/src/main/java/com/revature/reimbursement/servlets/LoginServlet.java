@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServlet;
 public class LoginServlet extends HttpServlet
 {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.getWriter().write("testing");
+        response.getWriter().write("{\"doGet\":\"response\"}");
     }
     
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -25,6 +25,8 @@ public class LoginServlet extends HttpServlet
         try {
             User user = userDAO.logIn(username, password);
             Data.getData().setUser(user);
+            
+            response.getWriter().write("{\"doPost\":\"response\"}");
         }
         catch (ConnectionException e) {
             response.setStatus(503);
