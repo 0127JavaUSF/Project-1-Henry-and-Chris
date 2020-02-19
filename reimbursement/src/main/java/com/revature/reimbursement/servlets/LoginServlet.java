@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import com.revature.reimbursement.exceptions.InvalidLoginException;
 import com.revature.reimbursement.exceptions.ConnectionException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.revature.reimbursement.ConnectionUtil;
 import com.revature.reimbursement.Data;
 import com.revature.reimbursement.daos.UserDAO;
@@ -41,7 +40,7 @@ public class LoginServlet extends HttpServlet
 			e.printStackTrace();
 		}
     	
-    	response.getWriter().write("failed"}");
+    	response.getWriter().write("failed");
     }
     
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
