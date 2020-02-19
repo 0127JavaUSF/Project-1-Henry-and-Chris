@@ -13,8 +13,8 @@ public class ConnectionUtil
     
     public static Connection getConnection() {
         String url = System.getenv("JDBC_URL_P1");
-        String user = System.getenv("JDBC_ROLE");
-        String password = System.getenv("JDBC_PASSWORD_P1");
+        String user = System.getenv("JDBC_ROLE_P1");
+        String password = System.getenv("JDBC_PASSWORD_P1A");
         try {
             return DriverManager.getConnection(url, user, password);
         }

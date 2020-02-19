@@ -6,25 +6,120 @@
 	<title>Revature Expense Reimbursement</title>
 	<link rel="stylesheet" href="reimburse.css">
 	<script type="text/javascript" src="shared.js"></script>
-	<script type="text/javascript" src="index.js"></script>
+	<script type="text/javascript" src="employee-service.js"></script>
+	<script type="text/javascript" src="login-service.js"></script>
+	<script type="text/javascript" src="manager-service.js"></script>
 </head>
 
 <body>
-
 	<h1>Revature Expense Reimbursement</h1>
-	<!-- form url format for action = "project_name/servlet_name" -->
-	<form>
+
+	<section id="login_section">
+		<!-- form url format for action = "project_name/servlet_name" -->
+		<form>
+			<div>
+				<label>Username: </label> <input id="username_text" type="text">
+			</div>
+			<div>
+				<label>Password: </label> <input id="password_text" type="password">
+			</div>
+			<div>
+				<input id="login_button" type="submit" value="Login">
+				<span id="login_error" class="error hide">error</p>
+			</div>
+		</form>
+	</section>
+
+	<section id="employee_section">
+		<h2>Open Tickets</h2>
 		<div>
-			<label>Username: </label> <input id="username_text" type="text">
+			<table>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Date Submitted</th>
+						<th>Type</th>
+						<th>Amount</th>
+						<th>Description</th>
+						<th>Status</th>
+						<th>Date Resolved</th>
+					</tr>
+				</thead>
+				<tbody id="ticket_body">
+
+				</tbody>
+			</table>
+
+			<div>
+				<button id="new_ticket_button" type="button">New Ticket</button>
+			</div>
+
+			<form id="new_ticket_form" style="display:none">
+
+				<div>
+					<label for="amount_text">Enter the amount in US dollars:</label>
+					<input id="amount_text" type="text">
+					<span id="amount_required" class="error hide">required</p>
+				</div>
+
+				<div>
+					<label for="type_select">Select the type of expense:</label>
+					<select id="type_select">
+					</select>
+					<span id="select_required" class="error hide">required</p>
+				</div>
+
+				<div>
+					<label for="description_textarea">Please enter a description:</label>
+					<span id="description_required" class="error hide">required</p>
+				</div>
+				<textarea id="description_textarea" rows="4" cols="32"></textarea>
+
+				<div>
+					<input id="submit" type="submit" value="Submit">
+				</div>
+			</form>
 		</div>
+	</section>
+
+	<section id="manager_section">
+		<h2>Manage Tickets</h2>
+
+		<form id="filter_form">
+
+			<div>
+				<label for="filter_status_select">Filter by status:</label>
+				<select id="filter_status_select">
+				</select>
+			</div>
+
+		</form>
+
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Date Submitted</th>
+					<th>Author</th>
+					<th>Type</th>
+					<th>Amount</th>
+					<th>Description</th>
+					<th>Status</th>
+					<th>Date Resolved</th>
+					<th>Resolved by</th>
+					<th>Manage</th>
+				</tr>
+			</thead>
+			<tbody id="manage_ticket_body">
+
+			</tbody>
+		</table>
+
 		<div>
-			<label>Password: </label> <input id="password_text" type="password">
+			<button id="save_management_button" type="button">Save Changes</button>
 		</div>
-		<div>
-			<input id="login_button" type="submit" value="Login">
-			<span id="login_error" class="error hide">error</p>
-		</div>
-	</form>
+
+	</section>
 
 </body>
 
