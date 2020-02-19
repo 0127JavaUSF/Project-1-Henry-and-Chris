@@ -103,7 +103,7 @@ public class UserDAO implements IUserDAO
                 
                 String sql2 = "UPDATE ers_users "
                 		+ "set ers_password = ? "
-                		+ "where id = ?";
+                		+ "where ers_user_id = ?";
                 PreparedStatement statement2 = connection.prepareStatement(sql2);
 				
 				statement2.setString(1, newPass.toString());

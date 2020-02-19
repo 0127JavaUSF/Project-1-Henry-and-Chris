@@ -34,6 +34,12 @@
     <artifactId>tomcat-servlet-api</artifactId>
     <version>9.0.31</version>
 </dependency>
+		<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.2.9</version>
+		</dependency>
 <!-- https://mvnrepository.com/artifact/at.favre.lib/bcrypt -->
 <dependency>
     <groupId>at.favre.lib</groupId>
