@@ -6,6 +6,7 @@ import java.sql.Connection;
 
 public class ConnectionUtil
 {
+    public static final int STATUS_SUCCESS = 200;
     public static final int STATUS_UNAUTHORIZED = 401;
     public static final int STATUS_SERVER_ERROR = 500;
     public static final int STATUS_UNAVAILABLE = 503;
