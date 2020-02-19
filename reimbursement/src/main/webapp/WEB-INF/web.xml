@@ -4,10 +4,25 @@
 
 <web-app>
 	<display-name>Archetype Created Web Application</display-name>
+	
+	<!--
+	<context-param>
+		<param-name>app-scope</param-name>
+		<param-value>app-value</param-value>
+	</context-param>
+	-->
 
 	<servlet>
 		<servlet-name>login</servlet-name>
 		<servlet-class>com.revature.reimbursement.servlets.LoginServlet</servlet-class>
+		
+		<!--
+		<init-param>
+			<param-name>servlet-scope-param</param-name>
+			<param-value>servlet-scope-value</param-value>
+		</init-param>
+		-->
+
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
@@ -15,4 +30,16 @@
 		<servlet-name>login</servlet-name>
 		<url-pattern>/login</url-pattern>
 	</servlet-mapping>
+	
+	<!-- do not use since this is a single page site
+	<error-page>
+		<error-code>404</error-code>
+		<location>/404.html</location>
+	</error-page>
+	
+	<error-page>
+		<exception-type>java.lang.NullPointerException</exception-type>
+		<location>/npe.html</location>
+	</error-page>
+	-->
 </web-app>
