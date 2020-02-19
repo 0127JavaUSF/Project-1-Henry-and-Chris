@@ -1,31 +1,20 @@
 
 async function fetchUser(username_, password_) {
-	try {
-		const config = {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				username: username_,
-				password: password_
-			})
-		}
 
-		let url = "http://localhost:8080/reimbursement/login";
-		const response = await fetch(url, config);
+	const postParams = {
+		username: username_,
+		password: password_
+	};
 
-		let json = await response.json()
+	postRequest(postParams, "http://localhost:8080/reimbursement/login", (json, errorMessage)=> {
 
-		if (response.ok) {
+		if(errorMessage) {
+
+			let error = document.getElementById("login_error");
+			error.innerText = errorMessage;
+			error.classList.remove("hide");
 		}
-		else {
-		}
-	}
-	catch (error) {
-		let test = 0;
-	}
+	});
 }
 
 function getUserXHR(username_, password_) {
@@ -50,10 +39,10 @@ document.addEventListener("DOMContentLoaded", function () {
 		const username = document.getElementById("username_text").value;
 		const password = document.getElementById("password_text").value;
 
-		//fetchUser(username, password);
+		fetchUser(username, password);
 		//getUserXHR(username, password);
 
-		window.location.href = "/reimbursement/employee-reimbursement.html";
+		//window.location.href = "/reimbursement/employee-reimbursement.html";
 
 		e.preventDefault();
 	});

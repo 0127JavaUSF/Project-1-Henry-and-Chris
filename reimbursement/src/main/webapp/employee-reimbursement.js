@@ -1,3 +1,21 @@
+
+function addAmountListener() {
+
+    let amount = document.getElementById("amount_text");
+    amount.addEventListener('blur', ()=> {
+
+        //if not a number (invalid input)
+        const amountFloat = Number.parseFloat(amount.value);
+        if(Number.isNaN(amountFloat)) {
+            amount.value = 0; //change to 0
+        }
+
+        const amountInDollars = formatCurrency(amount.value);
+
+        amount.value = amountInDollars;
+    });
+}
+
 function addNewTicketListener() {
 
     let button = document.getElementById("new_ticket_button");
@@ -91,13 +109,30 @@ function fillTypeSelect() {
     }
 }
 
+//returns a string in format $X.XX
+function formatCurrency(amount) {
+
+    const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2
+      })
+
+      return formatter.format(amount);
+}
+
 function validateNewTicketForm() {
 
     let isValid = true;
 
     let amount = document.getElementById("amount_text");
     let amountRequired = document.getElementById("amount_required");
-    if(!amount.value) { //if amount empty
+
+    let noDollarSign = amount.value.replace('$', ''); //remove dollar sign
+    let amountNumber = Number.parseFloat(noDollarSign);
+
+    //if amount is invalid
+    if(!amountNumber || Number.isNaN(amountNumber) || amountNumber === 0) {
         isValid = false;
         amountRequired.classList.remove("hide");
     }
@@ -133,6 +168,8 @@ document.addEventListener("DOMContentLoaded", function () {
     fillTicketTable();
 
     addNewTicketListener();
+
+    addAmountListener();
 
     fillTypeSelect();
 

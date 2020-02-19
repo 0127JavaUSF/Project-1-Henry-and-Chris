@@ -8,6 +8,7 @@
 	<servlet>
 		<servlet-name>login</servlet-name>
 		<servlet-class>com.revature.reimbursement.servlets.LoginServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
 
 	<servlet-mapping>
