@@ -1,6 +1,10 @@
 
 class Shared {
 
+    constructor() {
+        this.user = null;
+    }
+
     fillStatusSelect(tagId) {
 
         const select = document.getElementById(tagId);
@@ -76,8 +80,51 @@ class Shared {
     }
 
     //postParams should be an object literal
+    //this version works with Java response.GetParameter(). the content type is different
     async postRequest(postParams, url, callback) {
         try {
+            //encode post params
+            var formBody = [];
+            for (var property in postParams) {
+              var encodedKey = encodeURIComponent(property);
+              var encodedValue = encodeURIComponent(postParams[property]);
+              formBody.push(encodedKey + "=" + encodedValue);
+            }
+            formBody = formBody.join("&");
+
+            const config = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: formBody
+            }
+
+            const response = await fetch(url, config);
+
+            //if error
+            if (response.status >= 400) {
+
+                let errorMessage = this.postError(response.status);
+
+                callback({}, errorMessage);
+                return;
+            }
+
+            const json = await response.json()
+
+            callback(json, "");
+        }
+        catch (error) {
+
+            callback({}, "Error");
+        }
+    }
+
+    //postParams should be an object literal
+    //this version works with Jackson marshalling in Java
+    async postRequestJSON(postParams, url, callback) {
+        try {    
             const config = {
                 method: 'POST',
                 headers: {
@@ -92,13 +139,7 @@ class Shared {
             //if error
             if (response.status >= 400) {
 
-                let errorMessage;
-                switch (response.status) {
-                    case 401: errorMessage = "Unauthorized Error"; break;
-                    case 500: errorMessage = "Server Error"; break;
-                    case 503: errorMessage = "Database Connection Error"; break;
-                    default: errorMessage = "Error";
-                }
+                let errorMessage = this.postError(response.status);
 
                 callback({}, errorMessage);
                 return;
@@ -111,6 +152,16 @@ class Shared {
         catch (error) {
 
             callback({}, "Error");
+        }
+    }
+
+    postError(responseStatus) {
+
+        switch (responseStatus) {
+            case 401: return "Unauthorized Error";
+            case 500: return "Server Error";
+            case 503: return "Database Connection Error";
+            default: return "Error";
         }
     }
 

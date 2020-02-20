@@ -27,9 +27,10 @@ class EmployeeService {
 
             if (form.style.display === "none") {
                 form.style.display = "block";
+                button.disabled = true;
             }
-            //do not toggle
             // else {
+            //     //do not toggle
             //     form.style.display = "none";
             // }
         });

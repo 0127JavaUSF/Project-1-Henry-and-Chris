@@ -3,37 +3,66 @@
 
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Revature Expense Reimbursement</title>
 	<link rel="stylesheet" href="reimburse.css">
 	<script type="text/javascript" src="shared.js"></script>
 	<script type="text/javascript" src="employee-service.js"></script>
 	<script type="text/javascript" src="login-service.js"></script>
 	<script type="text/javascript" src="manager-service.js"></script>
+
+	<!--jquery is required for bootstrap-->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 </head>
 
 <body>
-	<h1>Revature Expense Reimbursement</h1>
+
+	<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+		<ul class="navbar-nav">
+			<li class="nav-item active">
+				<a class="nav-link disabled" href="#">My Tickets</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link disabled" href="#">Manage Tickets</a>
+			</li>
+		</ul>
+		<ul class="navbar-nav ml-auto">
+			<li class="nav-item">
+				<a class="nav-link disabled" href="#">Log out</a>
+			</li>
+		</ul>
+	</nav>
+
+	<h1 class="text-center my-5">Revature Expense Reimbursement</h1>
 
 	<section id="login_section">
+		<hr>
 		<!-- form url format for action = "project_name/servlet_name" -->
 		<form>
-			<div>
-				<label>Username: </label> <input id="username_text" type="text">
-			</div>
-			<div>
-				<label>Password: </label> <input id="password_text" type="password">
-			</div>
-			<div>
-				<input id="login_button" type="submit" value="Login">
-				<span id="login_error" class="error hide">error</p>
+			<div class="container my-5">
+				<h2 class="text-center">Log in</h2>
+				<div class="form-group mx-auto w-50">
+					<input id="username_text" class="form-control my-3" placeholder="Username" type="text">
+					<input id="password_text" class="form-control my-3" placeholder="Password" type="password">
+
+					<div class="text-center">
+						<input id="login_button" class="btn btn-primary w-25" type="submit" value="Login">
+						<div id="login_error" class="error hide">error</div>
+					</div>
+				</div>
 			</div>
 		</form>
 	</section>
 
-	<section id="employee_section">
-		<h2>Open Tickets</h2>
-		<div>
-			<table>
+	<section id="my_tickets_section">
+		<hr>
+		<div class="container my-5">
+			<h2 class="text-center">Open Tickets</h2>
+
+			<table class="table table-striped">
 				<thead>
 					<tr>
 						<th>ID</th>
@@ -46,43 +75,52 @@
 					</tr>
 				</thead>
 				<tbody id="ticket_body">
-
 				</tbody>
 			</table>
+		</div>
+	</section>
 
-			<div>
-				<button id="new_ticket_button" type="button">New Ticket</button>
+	<section id="new_ticket_section">
+		<hr>
+		<div class="container my-5">
+			<div class="text-center my-5">
+				<button id="new_ticket_button" class="btn btn-primary w-25" type="button">New Ticket</button>
 			</div>
 
 			<form id="new_ticket_form" style="display:none">
 
-				<div>
+				<div class="form-group mx-auto w-50">
 					<label for="amount_text">Enter the amount in US dollars:</label>
-					<input id="amount_text" type="text">
-					<span id="amount_required" class="error hide">required</p>
+					<span id="amount_required" class="error hide">required</span>
+					<input id="amount_text" class="form-control" type="text">
 				</div>
 
-				<div>
+				<div class="form-group mx-auto w-50">
 					<label for="type_select">Select the type of expense:</label>
-					<select id="type_select">
+					<span id="select_required" class="error hide">required</span>
+					<select id="type_select" class="form-control">
 					</select>
-					<span id="select_required" class="error hide">required</p>
 				</div>
 
-				<div>
-					<label for="description_textarea">Please enter a description:</label>
-					<span id="description_required" class="error hide">required</p>
+				<div class="form-group">
+					<div>
+						<label for="description_textarea">Please enter a description:</label>
+						<span id="description_required" class="error hide">required</span>
+					</div>
+					<div>
+						<textarea id="description_textarea" class="form-control" rows="4" cols="24"></textarea>
+					</div>
 				</div>
-				<textarea id="description_textarea" rows="4" cols="32"></textarea>
 
-				<div>
-					<input id="submit" type="submit" value="Submit">
+				<div class="text-center">
+					<input id="submit" class="btn btn-primary w-25" type="submit" value="Submit">
 				</div>
 			</form>
 		</div>
 	</section>
 
 	<section id="manager_section">
+		<hr>
 		<h2>Manage Tickets</h2>
 
 		<form id="filter_form">
@@ -116,7 +154,7 @@
 		</table>
 
 		<div>
-			<button id="save_management_button" type="button">Save Changes</button>
+			<button id="save_management_button" class="btn btn-primary" type="button">Save Changes</button>
 		</div>
 
 	</section>
