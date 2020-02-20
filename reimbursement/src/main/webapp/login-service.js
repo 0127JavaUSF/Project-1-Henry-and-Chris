@@ -33,6 +33,9 @@ class LoginService {
 				error.innerText = errorMessage;
 				error.classList.remove("hide");
 			}
+			else {
+				shared.user = json;
+			}
 		});
 	}
 
