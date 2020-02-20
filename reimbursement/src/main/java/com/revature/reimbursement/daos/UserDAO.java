@@ -58,7 +58,6 @@ public class UserDAO implements IUserDAO
             
             PreparedStatement prepared = connection.prepareStatement(sql);
             prepared.setString(1, username);
-           // prepared.setString(2, newPass.toString());
             
             ResultSet result = prepared.executeQuery();
             if (result.next()) {
