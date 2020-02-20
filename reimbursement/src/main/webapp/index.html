@@ -9,22 +9,27 @@
 	<script type="text/javascript" src="employee-service.js"></script>
 	<script type="text/javascript" src="login-service.js"></script>
 	<script type="text/javascript" src="manager-service.js"></script>
+
+	<!--jquery is required for bootstrap-->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 
 <body>
-	<h1>Revature Expense Reimbursement</h1>
+	<h1 class="text-center">Revature Expense Reimbursement</h1>
 
 	<section id="login_section">
 		<!-- form url format for action = "project_name/servlet_name" -->
 		<form>
-			<div>
+			<div class="container">
 				<label>Username: </label> <input id="username_text" type="text">
 			</div>
-			<div>
+			<div class="container">
 				<label>Password: </label> <input id="password_text" type="password">
 			</div>
-			<div>
-				<input id="login_button" type="submit" value="Login">
+			<div class="container">
+				<input id="login_button" class="btn btn-primary" type="submit" value="Login">
 				<span id="login_error" class="error hide">error</p>
 			</div>
 		</form>
@@ -32,7 +37,7 @@
 
 	<section id="employee_section">
 		<h2>Open Tickets</h2>
-		<div>
+		<div class="container">
 			<table>
 				<thead>
 					<tr>
@@ -50,33 +55,35 @@
 				</tbody>
 			</table>
 
-			<div>
-				<button id="new_ticket_button" type="button">New Ticket</button>
+			<div class="container">
+				<button id="new_ticket_button" class="btn btn-primary" type="button">New Ticket</button>
 			</div>
 
 			<form id="new_ticket_form" style="display:none">
 
-				<div>
+				<div class="container">
 					<label for="amount_text">Enter the amount in US dollars:</label>
 					<input id="amount_text" type="text">
 					<span id="amount_required" class="error hide">required</p>
 				</div>
 
-				<div>
+				<div class="container">
 					<label for="type_select">Select the type of expense:</label>
 					<select id="type_select">
 					</select>
 					<span id="select_required" class="error hide">required</p>
 				</div>
 
-				<div>
+				<div class="container">
 					<label for="description_textarea">Please enter a description:</label>
 					<span id="description_required" class="error hide">required</p>
 				</div>
-				<textarea id="description_textarea" rows="4" cols="32"></textarea>
+				<div class="form-group">
+					<textarea id="description_textarea" class="form-control" rows="4" cols="32"></textarea>
+				</div>
 
-				<div>
-					<input id="submit" type="submit" value="Submit">
+				<div class="container">
+					<input id="submit" class="btn btn-primary" type="submit" value="Submit">
 				</div>
 			</form>
 		</div>
@@ -87,7 +94,7 @@
 
 		<form id="filter_form">
 
-			<div>
+			<div class="container">
 				<label for="filter_status_select">Filter by status:</label>
 				<select id="filter_status_select">
 				</select>
@@ -115,8 +122,8 @@
 			</tbody>
 		</table>
 
-		<div>
-			<button id="save_management_button" type="button">Save Changes</button>
+		<div class="container">
+			<button id="save_management_button" class="btn btn-primary" type="button">Save Changes</button>
 		</div>
 
 	</section>
