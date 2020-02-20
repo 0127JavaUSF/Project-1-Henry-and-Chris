@@ -38,7 +38,7 @@ public class LoginServlet extends HttpServlet
     	UserDAO userDAO = new UserDAO();
         User user;
 		try {
-			user = userDAO.logIn("henry", "password");
+			user = userDAO.logIn("chris", "collins");
 
 	    	response.getWriter().write("Success");
 	    	return;
