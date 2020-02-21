@@ -2,6 +2,8 @@ package com.revature.reimbursement.daos;
 
 import java.sql.Blob;
 import com.revature.reimbursement.exceptions.InvalidReimbursementException;
+
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -105,12 +107,17 @@ public class ReimbursementDAO implements IReimbursementDAO
     }
     
     @Override
-    public Reimbursement insertReimbursement(BigDecimal amount, String description, int authorId, int typeId) throws ConnectionException, SQLException {
+    public Reimbursement insertReimbursement(BigDecimal amount, File receiptFile, String description, int authorId, int typeId) throws ConnectionException, SQLException {
 
-        try(Connection connection = ConnectionUtil.getConnection()) {
+    	Connection connection = null;
+        try {
+        	
+        	connection = ConnectionUtil.getConnection();     	
             if (connection == null) {
                 throw new ConnectionException();
             }
+            
+            connection.setAutoCommit(false);
             
             String sql = "INSERT INTO ers_reimbursement (reimb_amount, reimb_description, reimb_author, reimb_type_id) VALUES (?, ?, ?, ?) RETURNING *;";
             
@@ -126,11 +133,22 @@ public class ReimbursementDAO implements IReimbursementDAO
                 Reimbursement reimburse = new Reimbursement();
                 setReimbursementFromResultSet(reimburse, result);
                 
+                int id = reimburse.getId();
+                
+                //upload receipt to amazon
+                
+                //then insert amazon receipt url to reimbursement table
+                
+                connection.commit();
+                
                 return reimburse;
             }
             return null;
         }
         catch (SQLException e) {
+        	if(connection == null) {
+        		connection.rollback();
+        	}
             throw new SQLException();
         }
     }
@@ -162,7 +180,7 @@ public class ReimbursementDAO implements IReimbursementDAO
     
     private void setReimbursementFromResultSet(Reimbursement reimburse, ResultSet result) throws SQLException {
         try {
-            reimburse.init(result.getInt("reimb_id"), result.getBigDecimal("reimb_amount"), result.getTimestamp("reimb_submitted"), result.getTimestamp("reimb_resolved"), result.getString("reimb_description"), (Blob)null, result.getInt("reimb_author"), result.getInt("reimb_resolver"), result.getInt("reimb_status_id"), result.getInt("reimb_type_id"));
+            reimburse.init(result.getInt("reimb_id"), result.getBigDecimal("reimb_amount"), result.getTimestamp("reimb_submitted"), result.getTimestamp("reimb_resolved"), result.getString("reimb_description"), result.getString("reimb_reciept"), result.getInt("reimb_author"), result.getInt("reimb_resolver"), result.getInt("reimb_status_id"), result.getInt("reimb_type_id"));
         }
         catch (SQLException e) {
             throw e;
