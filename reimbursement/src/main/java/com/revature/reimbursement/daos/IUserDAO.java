@@ -12,5 +12,5 @@ public interface IUserDAO
     
     User logIn(String username, String password) throws ConnectionException, InvalidLoginException, SQLException;
     
-    void hashDatabasePasswords() throws ConnectionException, SQLException;
+    void hashDatabasePasswords(int id) throws ConnectionException, SQLException;
 }

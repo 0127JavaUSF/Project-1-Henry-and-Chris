@@ -90,7 +90,7 @@ public class UserDAO implements IUserDAO
         }
     }
     
-    public void hashDatabasePasswords() throws ConnectionException, SQLException
+    public void hashDatabasePasswords(int id) throws ConnectionException, SQLException
     {
     	Hasher hash = BCrypt.withDefaults();
     	try(Connection connection = ConnectionUtil.getConnection()) {
@@ -100,7 +100,7 @@ public class UserDAO implements IUserDAO
             connection.setAutoCommit(false);            
             String sql = "SELECT ers_password FROM ers_users WHERE ers_user_id = ?;";           
             PreparedStatement prepared = connection.prepareStatement(sql);
-            prepared.setInt(1, 3);
+            prepared.setInt(1, id);
             ResultSet result = prepared.executeQuery();
             if (result.next()) {                
             	char[] password = result.getString("ers_password").toCharArray();
@@ -110,9 +110,9 @@ public class UserDAO implements IUserDAO
                 		+ "where ers_user_id = ?";
                 PreparedStatement statement2 = connection.prepareStatement(sql2);				
                 statement2.setString(1, newPass);
-				statement2.setInt(2, 3);				
+				statement2.setInt(2, id);				
 				statement2.executeUpdate();
-				System.out.println("Hashing id 2 password to " + newPass);
+				System.out.println("Hashing id " + id + " password to " + newPass);
 				connection.commit();
             }
         }
