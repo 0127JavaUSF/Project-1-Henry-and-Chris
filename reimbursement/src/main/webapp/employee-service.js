@@ -75,18 +75,67 @@ class EmployeeService {
 
         const body = document.getElementById("ticket_body");
 
+        let i = 0;
         for (let ticket of response) {
 
-            const tr = document.createElement("tr");
+            let tr = document.createElement("tr");
             body.appendChild(tr);
+
+            //these attributes make the row clickable
+            tr.classList.add("clickable_tr");
+            tr.setAttribute("data-toggle", "collapse");
+            tr.setAttribute("data-target", "#collaspe_div" + i);            
 
             shared.setTableCell(tr, ticket.id);
             shared.setTableCell(tr, ticket.submitted);
-            shared.setTableCell(tr, shared.getReimbursementType(ticket.typeId));
+            shared.setTableCell(tr, TYPES[ticket.typeId]);
             shared.setTableCell(tr, ticket.amount);
-            shared.setTableCell(tr, ticket.description);
-            shared.setTableCell(tr, shared.getStatus(ticket.statusId));
+            shared.setTableCell(tr, STATUSES[ticket.statusId]);
             shared.setTableCell(tr, ticket.resolved);
+
+            //this row is collapsable. it contains the description and receipt
+            tr = document.createElement("tr");
+            body.appendChild(tr);
+
+            const td = document.createElement("td");
+            tr.appendChild(td);
+            td.setAttribute("colspan", "7");
+            td.style.width = "100%";
+
+            //collapsable div
+            const div = document.createElement("div");
+            td.appendChild(div);       
+            div.id = "collaspe_div" + i;
+            div.classList.add("collapse");
+
+            //Description heading
+            const h4 = document.createElement("h4");
+            div.appendChild(h4);
+            h4.innerText = "Description:";
+
+            //Description text
+            const p = document.createElement("p");
+            div.appendChild(p);
+            p.innerText = ticket.description;
+
+            const receiptImg = document.createElement("img");
+            div.appendChild(receiptImg);
+            receiptImg.setAttribute("src", "/reimbursement/receipt.jpeg");
+            receiptImg.setAttribute("alt", "attachment");
+
+            //when image loads
+            receiptImg.addEventListener("load", function() { //arrow function "this" is wrong context. we want the element
+
+                //resize it to 20% of the width of the window
+                const origWidth = this.width;
+                const newWidth = window.innerWidth * .2;
+                const percent = newWidth / origWidth;
+                
+                this.width *= percent;
+                this.height *= percent;
+            });
+
+            i++;
         }
     }
 
@@ -100,6 +149,27 @@ class EmployeeService {
         })
 
         return formatter.format(amount);
+    }
+
+    showSection() {
+
+        //close other sections
+        shared.closeSections();
+
+        //open these 2 sections
+        const ticketsSection = document.getElementById("my_tickets_section");
+        ticketsSection.style.display = "block";
+
+        const newTicketSection = document.getElementById("new_ticket_section");
+        newTicketSection.style.display = "block";
+
+        //update nav bar
+
+        shared.setManageNavBarDisplay();
+
+        shared.setNavBar(NAV_MY_TICKETS, true, true);
+        shared.setNavBar(NAV_MANAGE_TICKETS, false, false);
+        shared.setNavBar(NAV_LOG_OUT, false, false);
     }
 
     validateNewTicketForm() {

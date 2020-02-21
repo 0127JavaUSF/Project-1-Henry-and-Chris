@@ -46,5 +46,21 @@ class ManagerService {
             shared.setTableCell(tr, ticket.resolved);
         }
     }
+
+    showSection() {
+
+        shared.closeSections();
+
+        const managerSection = document.getElementById("manager_section");
+        managerSection.style.display = "block";
+
+        //update nav bar
+
+        shared.setManageNavBarDisplay();
+
+        shared.setNavBar(NAV_MY_TICKETS, false, false);
+        shared.setNavBar(NAV_MANAGE_TICKETS, true, true);
+        shared.setNavBar(NAV_LOG_OUT, false, false);
+    }
 }
 const managerService = new ManagerService();
