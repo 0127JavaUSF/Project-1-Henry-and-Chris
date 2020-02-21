@@ -50,15 +50,16 @@ public class LoginServlet extends HttpServlet
         
     	//unmarshalling example. creating java from JSON
 //    	ObjectMapper om = new ObjectMapper();
-//    	om.readValue(request.getReader(), User.class);
+//    	om.readValue(request.getReader(), User.class);		
 	    	   	
     	String username = request.getParameter("username");
         String password = request.getParameter("password");
+        
         UserDAO userDAO = new UserDAO();
         try {
             User user = userDAO.logIn(username, password);
             
-            //bins user to session
+            //binds user to session
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
                                     

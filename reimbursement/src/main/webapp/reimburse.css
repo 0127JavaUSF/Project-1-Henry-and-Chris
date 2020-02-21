@@ -5,6 +5,10 @@
 }
 
 .hide {
-
 	visibility: hidden;
+}
+
+.clickable_tr:hover {
+	background-color: rgb(223, 255, 255);
+	cursor: pointer;
 }
