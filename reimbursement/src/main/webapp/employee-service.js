@@ -59,7 +59,9 @@ class EmployeeService {
                 submitted: "Today",
                 resolved: "",
                 description: "Plane ticket.",
+                receipt: "https://my-project-1-bucket.s3.amazonaws.com/24",
                 statusId: 1,
+
                 typeId: 2
             },
             {
@@ -69,6 +71,7 @@ class EmployeeService {
                 resolved: "",
                 description: "Company picnic.",
                 statusId: 3,
+                receipt: "https://my-project-1-bucket.s3.amazonaws.com/23",
                 typeId: 3
             }
         ];
@@ -86,6 +89,7 @@ class EmployeeService {
             shared.setTableCell(tr, ticket.amount);
             shared.setTableCell(tr, ticket.description);
             shared.setTableCell(tr, shared.getStatus(ticket.statusId));
+            shared.setTableImgCell(tr, ticket.receipt);
             shared.setTableCell(tr, ticket.resolved);
         }
     }

@@ -173,6 +173,16 @@ class Shared {
         tr.appendChild(td);
         td.innerText = data;
     }
+
+    setTableImgCell(tr, imgUrl) {
+        const td = document.createElement("td");
+        const img = document.createElement("img");
+        img.src = imgUrl;
+        tr.appendChild(td);
+        td.append(img);
+
+        //td.append(<img src="https://my-project-1-bucket.s3.amazonaws.com/24"/>);
+    }
 }
 const shared = new Shared();
 
