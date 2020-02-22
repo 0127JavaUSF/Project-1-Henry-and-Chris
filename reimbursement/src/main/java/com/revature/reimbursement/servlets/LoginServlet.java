@@ -42,6 +42,11 @@ public class LoginServlet extends HttpServlet
 		
 		//route to doPost for testing. this servlet only accepts POST anyway
 		
+		//avoid CORS errors
+		resp.addHeader("Access-Control-Allow-Headers", "authorization");
+		resp.addHeader("Access-Control-Allow-Methods", "GET POST PUT DELETE");
+		resp.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+		
 		doPost(req, resp);
 	}
     

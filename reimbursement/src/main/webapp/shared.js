@@ -170,6 +170,58 @@ class Shared {
         }
     }
 
+        //postParams should be an object literal
+        //this works with file upload (such as receipt)
+        async postRequestMultiPart(postParams, file, url, callback) {
+            try {
+                //encode post params
+                // var formBody = [];
+                // for (var property in postParams) {
+                //   var encodedKey = encodeURIComponent(property);
+                //   var encodedValue = encodeURIComponent(postParams[property]);
+                //   formBody.push(encodedKey + "=" + encodedValue);
+                // }
+                // formBody = formBody.join("&");
+
+                //append file
+                var data = new FormData();
+                data.append('file', file);
+
+                //append post params
+                for (var property in postParams) {
+                    data.append(property, postParams[property]);
+                }
+    
+                const config = {
+                    method: 'POST',
+                    //headers should not be set manually for multi-part form data
+                    // headers: {
+                    //     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                    // },
+                    body: data
+                }
+    
+                const response = await fetch(url, config);
+    
+                //if error
+                if (response.status >= 400) {
+    
+                    let errorMessage = this.postError(response.status);
+    
+                    callback({}, errorMessage);
+                    return;
+                }
+    
+                const json = await response.json()
+    
+                callback(json, "");
+            }
+            catch (error) {
+    
+                callback({}, "Error");
+            }
+        }
+
     //postParams should be an object literal
     async postRequest(postParams, url, callback) {
         try {
@@ -198,13 +250,7 @@ class Shared {
             //if error
             if (response.status >= 400) {
 
-                let errorMessage;
-                switch (response.status) {
-                    case 401: errorMessage = "Unauthorized Error"; break;
-                    case 500: errorMessage = "Server Error"; break;
-                    case 503: errorMessage = "Database Connection Error"; break;
-                    default: errorMessage = "Error";
-                }
+                let errorMessage = this.postError(response.status);
 
                 callback({}, errorMessage);
                 return;
@@ -217,6 +263,50 @@ class Shared {
         catch (error) {
 
             callback({}, "Error");
+        }
+    }
+
+    //postParams should be an object literal
+    //this version works with Jackson marshalling in Java
+    async postRequestJSON(postParams, url, callback) {
+        try {    
+            const config = {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(postParams)
+            }
+
+            const response = await fetch(url, config);
+
+            //if error
+            if (response.status >= 400) {
+
+                let errorMessage = this.postError(response.status);
+
+                callback({}, errorMessage);
+                return;
+            }
+
+            const json = await response.json()
+
+            callback(json, "");
+        }
+        catch (error) {
+
+            callback({}, "Error");
+        }
+    }
+
+    postError(responseStatus) {
+
+        switch (responseStatus) {
+            case 401: return "Unauthorized Error";
+            case 500: return "Server Error";
+            case 503: return "Database Connection Error";
+            default: return "Error";
         }
     }
 
