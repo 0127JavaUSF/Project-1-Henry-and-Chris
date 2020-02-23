@@ -59,7 +59,7 @@ class EmployeeService {
                 submitted: "Today",
                 resolved: "",
                 description: "Plane ticket.",
-                receipt: "https://my-project-1-bucket.s3.amazonaws.com/24",
+                receipt: "https://my-project-1-bucket.s3.amazonaws.com/1",
                 statusId: 1,
 
                 typeId: 2
@@ -71,7 +71,7 @@ class EmployeeService {
                 resolved: "",
                 description: "Company picnic.",
                 statusId: 3,
-                receipt: "https://my-project-1-bucket.s3.amazonaws.com/23",
+                receipt: "https://my-project-1-bucket.s3.amazonaws.com/1",
                 typeId: 3
             }
         ];
@@ -123,7 +123,7 @@ class EmployeeService {
 
             const receiptImg = document.createElement("img");
             div.appendChild(receiptImg);
-            receiptImg.setAttribute("src", "/reimbursement/receipt.jpeg");
+            receiptImg.setAttribute("src", "https://my-project-1-bucket.s3.amazonaws.com/1");
             receiptImg.setAttribute("alt", "attachment");
 
             //when image loads
