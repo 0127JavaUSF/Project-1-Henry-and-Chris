@@ -26,7 +26,8 @@ class LoginService {
 
 			const error = document.getElementById("login_error");
 			if (errorMessage) {
-
+				document.getElementById("username_text").value = "";
+				document.getElementById("password_text").value = "";
 				error.innerText = errorMessage;
 				error.classList.remove("hide");
 			}
