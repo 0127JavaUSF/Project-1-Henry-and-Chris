@@ -9,6 +9,7 @@ import com.revature.reimbursement.exceptions.InvalidUserException;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import at.favre.lib.crypto.bcrypt.BCrypt.Hasher;
+import at.favre.lib.crypto.bcrypt.BCrypt.Verifyer;
 
 import com.revature.reimbursement.exceptions.ConnectionException;
 import com.revature.reimbursement.ConnectionUtil;
@@ -23,7 +24,7 @@ public class UserDAO implements IUserDAO
 	        if (connection == null) {
 	            throw new ConnectionException();
 	        }
-
+	        
 	        String sql = "SELECT * FROM ers_users WHERE ers_user_id = ?;";
 	        
 	        PreparedStatement prepared = connection.prepareStatement(sql);
@@ -51,22 +52,29 @@ public class UserDAO implements IUserDAO
             if (connection == null) {
                 throw new ConnectionException();
             }
-            
-            String sql = "SELECT * FROM ers_users WHERE ers_username = ? AND ers_password = ?;";
+    		Verifyer verifyer = BCrypt.verifyer();
+    						
+            String sql = "SELECT * FROM ers_users WHERE ers_username = ?;";
             
             PreparedStatement prepared = connection.prepareStatement(sql);
             prepared.setString(1, username);
-            prepared.setString(2, password);
             
             ResultSet result = prepared.executeQuery();
             if (result.next()) {
+            	if(verifyer.verify(password.toCharArray(), result.getString("ers_password").toCharArray()).verified)
+            	{
+            		User user = new User();
+                    setUserFromResultSet(user, result);
+                    
+                    return user;
+            	}
+            	else
+            	{
+            		throw new InvalidLoginException();
+            	}
             	
-                User user = new User();
-                setUserFromResultSet(user, result);
-                
-                return user;
             }
-            throw new InvalidLoginException();
+            throw new InvalidLoginException(); //username is not in database exception
         }
         catch (SQLException e) {
             throw new SQLException();
@@ -82,27 +90,34 @@ public class UserDAO implements IUserDAO
         }
     }
     
-    public void hashDatabasePasswords() throws ConnectionException, SQLException
+    public void hashDatabasePasswords(int id) throws ConnectionException, SQLException
     {
     	Hasher hash = BCrypt.withDefaults();
     	try(Connection connection = ConnectionUtil.getConnection()) {
             if (connection == null) {
                 throw new ConnectionException();
             }
-            connection.setAutoCommit(false);            String sql = "SELECT ers_password FROM ers_users WHERE ers_user_id = ?;";            PreparedStatement prepared = connection.prepareStatement(sql);
-            prepared.setInt(1, 3);
+            connection.setAutoCommit(false);            
+            String sql = "SELECT ers_password FROM ers_users WHERE ers_user_id = ?;";           
+            PreparedStatement prepared = connection.prepareStatement(sql);
+            prepared.setInt(1, id);
             ResultSet result = prepared.executeQuery();
-            if (result.next()) {                char[] password = result.getString("ers_password").toCharArray();
-                byte[] newPass = hash.hash(12,password);                String sql2 = "UPDATE ers_users "
+            if (result.next()) {                
+            	char[] password = result.getString("ers_password").toCharArray();
+                String newPass = hash.hashToString(4,password);                
+                String sql2 = "UPDATE ers_users "
                 		+ "set ers_password = ? "
                 		+ "where ers_user_id = ?";
-                PreparedStatement statement2 = connection.prepareStatement(sql2);				statement2.setString(1, newPass.toString());
-				statement2.setInt(2, 3);				statement2.executeUpdate();
-				System.out.println("Hashing id 2 password to " + newPass.toString());
+                PreparedStatement statement2 = connection.prepareStatement(sql2);				
+                statement2.setString(1, newPass);
+				statement2.setInt(2, id);				
+				statement2.executeUpdate();
+				System.out.println("Hashing id " + id + " password to " + newPass);
 				connection.commit();
             }
         }
         catch (SQLException e) {
+        	e.printStackTrace();
             throw new SQLException();
         }
     }

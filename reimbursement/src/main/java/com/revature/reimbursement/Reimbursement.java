@@ -20,13 +20,13 @@ public class Reimbursement
     private Timestamp submitted;
     private Timestamp resolved;
     private String description;
-    private Blob receipt;
+    private String receipt;
     private int authorId;
     private int resolverId;
     private int statusId;
     private int typeId;
     
-    public void init(int id, BigDecimal amount, Timestamp submitted, Timestamp resolved, String description, Blob receipt, int authorId, int resolverId, int statusId, int typeId) {
+    public void init(int id, BigDecimal amount, Timestamp submitted, Timestamp resolved, String description, String receipt, int authorId, int resolverId, int statusId, int typeId) {
         this.id = id;
         this.amount = amount;
         this.submitted = submitted;
@@ -79,11 +79,11 @@ public class Reimbursement
         this.description = description;
     }
     
-    public Blob getReceipt() {
+    public String getReceipt() {
         return this.receipt;
     }
     
-    public void setReceipt(final Blob receipt) {
+    public void setReceipt(final String receipt) {
         this.receipt = receipt;
     }
     
