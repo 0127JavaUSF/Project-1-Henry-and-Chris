@@ -255,6 +255,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if(typeof managerService !== "undefined") {
         
+        managerService.fillManageTicketTable();
+
         shared.fillStatusSelect("filter_status_select");
     }
 });

@@ -13,7 +13,7 @@ class ManagerService {
                 resolved: "",
                 description: "Plane ticket.",
                 authorId: 4,
-                resolverId: 2,
+                resolverId: 0,
                 statusId: 1,
                 typeId: 2
             },
@@ -21,10 +21,10 @@ class ManagerService {
                 id: "2",
                 amount: 150.00,
                 submitted: "Yesterday",
-                resolved: "",
+                resolved: "12:50 PM",
                 description: "Company picnic.",
                 authorId: 5,
-                resolverId: 0,
+                resolverId: 2,
                 statusId: 3,
                 typeId: 3
             }
@@ -44,15 +44,18 @@ class ManagerService {
             shared.setTableCell(tr, ticket.id);
             shared.setTableCell(tr, ticket.submitted);
             shared.setTableCell(tr, ticket.authorId);
-            shared.setTableCell(tr, shared.getReimbursementType(ticket.typeId));
+            shared.setTableCell(tr, TYPES[ticket.typeId]);
             shared.setTableCell(tr, ticket.amount);
-            shared.setTableCell(tr, shared.getStatus(ticket.statusId));
+            shared.setTableCell(tr, STATUSES[ticket.statusId]);
             shared.setTableCell(tr, ticket.resolved);
             shared.setTableCell(tr, ticket.resolverId);
 
+            tr = document.createElement("tr");
+            body.appendChild(tr);
+
             const td = document.createElement("td");
             tr.appendChild(td);
-            td.setAttribute("colspan", "9");
+            td.setAttribute("colspan", "8");
             td.style.width = "100%";
 
             //collapsable div
@@ -75,8 +78,34 @@ class ManagerService {
             div.appendChild(receiptImg);
             receiptImg.setAttribute("src", "https://my-project-1-bucket.s3.amazonaws.com/1");
             receiptImg.setAttribute("alt", "attachment");
+            
+            if(ticket.statusId === 1){
+            tr = document.createElement("tr");
+            body.appendChild(tr);
 
-            //when image loads
+            const td2 = document.createElement("div")
+            tr.appendChild(td2);
+            td2.setAttribute("colspan", "2");
+            td2.style.width = "100%";
+
+            const div2 = document.createElement("div");
+            div2.className = "btn-group w-150"
+            body.appendChild(div2);
+            
+            const approve = document.createElement("input");
+            approve.type = "button";
+            approve.className = "btn btn-primary .revature_orange w-100";
+            approve.value = "Approve";
+            div2.appendChild(approve);
+
+            const deny = document.createElement("input");
+            deny.type = "button";
+            deny.className = "btn btn-primary .revature_orange w-100";
+            deny.value = "Deny";
+            div2.appendChild(deny);
+            }
+
+           // when image loads
             receiptImg.addEventListener("load", function() { //arrow function "this" is wrong context. we want the element
 
                 //resize it to 20% of the width of the window
