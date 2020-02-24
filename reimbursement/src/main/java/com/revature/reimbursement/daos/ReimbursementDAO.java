@@ -2,8 +2,10 @@ package com.revature.reimbursement.daos;
 
 import java.sql.Blob;
 import com.revature.reimbursement.exceptions.InvalidReimbursementException;
+import com.revature.reimbursement.exceptions.InvalidUserException;
 
 import java.io.File;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -107,7 +109,7 @@ public class ReimbursementDAO implements IReimbursementDAO
     }
     
     @Override
-    public Reimbursement insertReimbursement(BigDecimal amount, File receiptFile, String description, int authorId, int typeId) throws ConnectionException, SQLException {
+    public Reimbursement insertReimbursement(BigDecimal amount, InputStream receiptFile, String description, int authorId, int typeId) throws ConnectionException, InvalidUserException, SQLException {
 
     	Connection connection = null;
         try {
@@ -143,10 +145,11 @@ public class ReimbursementDAO implements IReimbursementDAO
                 
                 return reimburse;
             }
-            return null;
+            
+            throw new InvalidUserException();
         }
         catch (SQLException e) {
-        	if(connection == null) {
+        	if(connection != null) {
         		connection.rollback();
         	}
             throw new SQLException();

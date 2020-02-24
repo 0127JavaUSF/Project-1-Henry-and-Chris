@@ -14,5 +14,15 @@
 }
 
 .revature_orange {
-	color: rgb(242, 105, 37) !important;
+	background-color: rgb(242, 105, 37) !important;
+	border-color: rgb(242, 105, 37) !important;
+}
+
+.revature_orange:hover {
+	background-color: rgb(210, 72, 5) !important;
+	border-color: rgb(210, 72, 5) !important;
+}
+
+.revature_orange:focus {
+	box-shadow: 0 0 0 .2rem rgba(242, 105, 37, .5) !important;
 }
