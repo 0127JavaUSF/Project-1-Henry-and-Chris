@@ -68,7 +68,7 @@ public class Test {
 		Reimbursement test = new Reimbursement();
 		
 //		try {
-//			test = reimb.insertReimbursement(BigDecimal.valueOf(50.0), file, "test", "Flight", 3, 1);
+//			test = reimb.insertReimbursement(BigDecimal.valueOf(50.0), file, "Flight", 3, 1);
 //		} catch (ConnectionException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
@@ -79,8 +79,8 @@ public class Test {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-	
-		System.out.println(test.getReceipt());
+//	
+//		System.out.println(test.getReceipt());
 //        System.out.println("test");
 //		s3.putObject(bucketName, "8" , new File("C:/picture.png"));
 		//s3.putObject(bucketName, "24" , new File("C:\\Users\\chris\\Documents\\lastimage.png"));
