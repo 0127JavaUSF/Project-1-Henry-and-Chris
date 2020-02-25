@@ -3,6 +3,7 @@ package com.revature.reimbursement.daos;
 
 import java.io.File;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.List;
 
 
@@ -13,6 +14,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.revature.reimbursement.exceptions.ConnectionException;
 
 public class Test {
 
@@ -35,6 +37,17 @@ public class Test {
 		//System.out.println(asdf);
 		for (S3ObjectSummary os : objects) {
 		    System.out.println("* " + os.getKey());
+		}
+		
+		UserDAO user = new UserDAO();
+		try {
+			user.hashDatabasePasswords(7);
+		} catch (ConnectionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
