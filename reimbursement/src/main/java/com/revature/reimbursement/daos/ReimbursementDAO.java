@@ -151,10 +151,9 @@ public class ReimbursementDAO implements IReimbursementDAO
                 prepared2.setString(1, recieptUrl.toString());
                 prepared2.setInt(2, id);
                 
-                int result2 = prepared.executeUpdate();
+                int result2 = prepared2.executeUpdate();
                 if (result2 == 1)
                 {
-                	connection.commit();
                 	reimburse.setReceipt(recieptUrl.toString());
                 }
                 else {
@@ -172,6 +171,7 @@ public class ReimbursementDAO implements IReimbursementDAO
         }
         catch (SQLException e) {
         	connection.rollback();
+        	e.printStackTrace();
             throw new SQLException();
         }
     }
