@@ -67,18 +67,18 @@ public class Test {
 		ReimbursementDAO reimb = new ReimbursementDAO();
 		Reimbursement test = new Reimbursement();
 		
-		try {
-			test = reimb.insertReimbursement(BigDecimal.valueOf(50.0), inputStream, "Flight", 3, 1);
-		} catch (ConnectionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidUserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			test = reimb.insertReimbursement(BigDecimal.valueOf(50.0), file, "test", "Flight", 3, 1);
+//		} catch (ConnectionException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InvalidUserException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	
 		System.out.println(test.getReceipt());
 //        System.out.println("test");

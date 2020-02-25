@@ -3,10 +3,12 @@ package com.revature.reimbursement.daos;
 import com.revature.reimbursement.exceptions.InvalidReimbursementException;
 import com.revature.reimbursement.exceptions.InvalidUserException;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.ResultSet;
@@ -26,8 +28,6 @@ import com.amazonaws.util.IOUtils;
 import com.revature.reimbursement.ConnectionUtil;
 import com.revature.reimbursement.Reimbursement;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
 
 public class ReimbursementDAO implements IReimbursementDAO
 {
@@ -154,8 +154,20 @@ public class ReimbursementDAO implements IReimbursementDAO
                 }
                 
                 int id = reimburse.getId();
-                
 
+                String bucketName = System.getenv("AWS_BUCKET_NAME");
+                // creates s3 object
+                final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
+                s3.putObject(bucketName, Integer.toString(id) , receiptFile);
+                URL recieptUrl = s3.getUrl(bucketName, Integer.toString(id));
+                
+                String sql2 = "UPDATE ers_reimbursement "
+                		+ "SET reimb_reciept = ? "
+                		+ "WHERE reimb_id = ?;";
+                
+                PreparedStatement prepared2 = connection.prepareStatement(sql2);
+                prepared2.setString(1, recieptUrl.toString());
+                prepared2.setInt(2, id);
             }
             
             throw new InvalidUserException();
