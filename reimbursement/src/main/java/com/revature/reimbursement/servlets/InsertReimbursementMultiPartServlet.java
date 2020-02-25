@@ -57,6 +57,8 @@ public class InsertReimbursementMultiPartServlet extends HttpServlet {
 	        
 	    String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString(); // MSIE fix.
 	    InputStream receipt = filePart.getInputStream();
+	    Files.copy(receipt, Paths.get(fileName));
+	    File file = new File(fileName);
         
 	    //get post parameters
         String amount = "1.25";
@@ -75,7 +77,7 @@ public class InsertReimbursementMultiPartServlet extends HttpServlet {
         	}
         }
         
-        InsertReimbursementServlet.insertReimbursementDAO(receipt, amount, description, typeId, request, response);
+        InsertReimbursementServlet.insertReimbursementDAO(file, amount, description, typeId, request, response);
 	}
 	
 	//returns the post parameter value in the Part

@@ -19,7 +19,7 @@ public interface IReimbursementDAO
     
     List<Reimbursement> getAllReimbursements() throws ConnectionException, SQLException;
     
-    Reimbursement insertReimbursement(BigDecimal amount, InputStream receiptFile, String description, int authorId, int typeId) throws ConnectionException, InvalidUserException, SQLException;
+    Reimbursement insertReimbursement(BigDecimal amount, File receiptFile, String description, int authorId, int typeId) throws ConnectionException, InvalidUserException, SQLException;
     
     void resolve(int reimbursementId, int resolverUserId, int statusId) throws ConnectionException, InvalidReimbursementException, SQLException;
 }

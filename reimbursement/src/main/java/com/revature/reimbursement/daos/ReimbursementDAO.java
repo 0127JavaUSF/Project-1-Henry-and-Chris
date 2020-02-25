@@ -3,9 +3,11 @@ package com.revature.reimbursement.daos;
 import com.revature.reimbursement.exceptions.InvalidReimbursementException;
 import com.revature.reimbursement.exceptions.InvalidUserException;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.ResultSet;
@@ -22,6 +24,8 @@ import com.amazonaws.util.IOUtils;
 import com.revature.reimbursement.ConnectionUtil;
 import com.revature.reimbursement.Reimbursement;
 import java.util.List;
+
+import org.apache.tomcat.jni.File;
 
 public class ReimbursementDAO implements IReimbursementDAO
 {
@@ -115,7 +119,7 @@ public class ReimbursementDAO implements IReimbursementDAO
     }
     
     @Override
-    public Reimbursement insertReimbursement(BigDecimal amount, InputStream receiptFile, String description, int authorId, int typeId) throws ConnectionException, InvalidUserException, SQLException {
+    public Reimbursement insertReimbursement(BigDecimal amount, java.io.File receiptFile, String description, int authorId, int typeId) throws ConnectionException, InvalidUserException, SQLException {
 
     	Connection connection = null;
         try {
@@ -151,19 +155,7 @@ public class ReimbursementDAO implements IReimbursementDAO
                 String bucketName = System.getenv("AWS_BUCKET_NAME");
                 // creates s3 object
                 final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
-                ObjectMetadata metadata = new ObjectMetadata();
-                byte[] bytes = null;
-        		try {
-        			//changes the inputstream to a byte array so that we can tell how large the stream is
-        			bytes = IOUtils.toByteArray(receiptFile);
-        		} catch (IOException e) {
-        			e.printStackTrace();
-        		}
-        		//sets the metadata to tell the s3 how large the object is
-        		metadata.setContentLength(bytes.length);
-        		//adds the byte array to a byte array input stream to send an input stream to the s3 bucket
-        		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-                s3.putObject(bucketName, Integer.toString(id) , byteArrayInputStream , metadata);
+                s3.putObject(bucketName, Integer.toString(id) , receiptFile);
                 URL recieptUrl = s3.getUrl(bucketName, Integer.toString(id));
                 
                 String sql2 = "UPDATE ers_reimbursement "

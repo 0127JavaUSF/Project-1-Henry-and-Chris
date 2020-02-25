@@ -68,7 +68,7 @@ public class Test {
 		Reimbursement test = new Reimbursement();
 		
 		try {
-			test = reimb.insertReimbursement(BigDecimal.valueOf(50.0), inputStream, "Flight", 3, 1);
+			test = reimb.insertReimbursement(BigDecimal.valueOf(50.0), file, "Flight", 3, 1);
 		} catch (ConnectionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
