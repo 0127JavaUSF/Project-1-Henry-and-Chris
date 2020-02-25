@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -57,7 +58,7 @@ public class InsertReimbursementMultiPartServlet extends HttpServlet {
 	        
 	    String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString(); // MSIE fix.
 	    InputStream receipt = filePart.getInputStream();
-	    Files.copy(receipt, Paths.get(fileName));
+	    Files.copy(receipt, Paths.get(fileName), StandardCopyOption.REPLACE_EXISTING);
 	    File file = new File(fileName);
         
 	    //get post parameters
