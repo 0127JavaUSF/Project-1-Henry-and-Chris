@@ -4,6 +4,7 @@ import com.revature.reimbursement.exceptions.InvalidReimbursementException;
 import com.revature.reimbursement.exceptions.InvalidUserException;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -14,14 +15,19 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import com.revature.reimbursement.exceptions.ConnectionException;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
 import com.revature.reimbursement.ConnectionUtil;
 import com.revature.reimbursement.Reimbursement;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 
 public class ReimbursementDAO implements IReimbursementDAO
 {
@@ -115,7 +121,7 @@ public class ReimbursementDAO implements IReimbursementDAO
     }
     
     @Override
-    public Reimbursement insertReimbursement(BigDecimal amount, InputStream receiptFile, String description, int authorId, int typeId) throws ConnectionException, InvalidUserException, SQLException {
+    public Reimbursement insertReimbursement(BigDecimal amount, InputStream receiptFile, String receiptFileName, String description, int authorId, int typeId) throws ConnectionException, InvalidUserException, SQLException {
 
     	Connection connection = null;
         try {
@@ -148,47 +154,8 @@ public class ReimbursementDAO implements IReimbursementDAO
                 }
                 
                 int id = reimburse.getId();
-                String bucketName = System.getenv("AWS_BUCKET_NAME");
-                // creates s3 object
-                final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
-                ObjectMetadata metadata = new ObjectMetadata();
-                byte[] bytes = null;
-        		try {
-        			//changes the inputstream to a byte array so that we can tell how large the stream is
-        			bytes = IOUtils.toByteArray(receiptFile);
-        		} catch (IOException e) {
-        			e.printStackTrace();
-        		}
-        		//sets the metadata to tell the s3 how large the object is
-        		metadata.setContentLength(bytes.length);
-        		//adds the byte array to a byte array input stream to send an input stream to the s3 bucket
-        		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-                s3.putObject(bucketName, Integer.toString(id) , byteArrayInputStream , metadata);
-                URL recieptUrl = s3.getUrl(bucketName, Integer.toString(id));
                 
-                String sql2 = "UPDATE ers_reimbursement "
-                		+ "SET reimb_reciept = ? "
-                		+ "WHERE reimb_id = ?;";
-                
-                PreparedStatement prepared2 = connection.prepareStatement(sql2);
-                prepared2.setString(1, recieptUrl.toString());
-                prepared2.setInt(2, id);
-                
-                int result2 = prepared2.executeUpdate();
-                if (result2 == 1)
-                {
-                	connection.commit();
-                	//sets the url for the reimburse object to retrieve the image
-                	reimburse.setReceipt(recieptUrl.toString());
-                	
-                	return reimburse;
-                }
-                else {
-                	if(connection != null) {
-                		connection.rollback();
-                	}
-                    throw new SQLException();
-                }
+
             }
             
             throw new InvalidUserException();
@@ -199,6 +166,12 @@ public class ReimbursementDAO implements IReimbursementDAO
         	}
             throw new SQLException();
         }
+        catch (IOException e) {
+        	if(connection != null) {
+        		connection.rollback();
+        	}
+            throw new SQLException();
+		}
     }
     
     @Override
