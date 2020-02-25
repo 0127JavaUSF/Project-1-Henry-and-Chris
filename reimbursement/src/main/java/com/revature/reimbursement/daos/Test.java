@@ -67,20 +67,20 @@ public class Test {
 		ReimbursementDAO reimb = new ReimbursementDAO();
 		Reimbursement test = new Reimbursement();
 		
-		try {
-			test = reimb.insertReimbursement(BigDecimal.valueOf(50.0), file, "Flight", 3, 1);
-		} catch (ConnectionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidUserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
-		System.out.println(test.getReceipt());
+//		try {
+//			test = reimb.insertReimbursement(BigDecimal.valueOf(50.0), file, "Flight", 3, 1);
+//		} catch (ConnectionException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InvalidUserException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	
+//		System.out.println(test.getReceipt());
 //        System.out.println("test");
 //		s3.putObject(bucketName, "8" , new File("C:/picture.png"));
 		//s3.putObject(bucketName, "24" , new File("C:\\Users\\chris\\Documents\\lastimage.png"));
