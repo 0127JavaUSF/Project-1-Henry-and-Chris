@@ -5,6 +5,7 @@ import com.revature.reimbursement.exceptions.InvalidUserException;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,16 +17,17 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import com.revature.reimbursement.exceptions.ConnectionException;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
 import com.revature.reimbursement.ConnectionUtil;
 import com.revature.reimbursement.Reimbursement;
 import java.util.List;
-
-import org.apache.tomcat.jni.File;
 
 public class ReimbursementDAO implements IReimbursementDAO
 {
@@ -109,6 +111,13 @@ public class ReimbursementDAO implements IReimbursementDAO
                 Reimbursement reimburse = new Reimbursement();
                 setReimbursementFromResultSet(reimburse, result);
                 
+                //reimburse.setAuthorString();
+                //reimburse.setResolverString();
+                
+                //do not send primary keys to client
+                reimburse.setAuthorId(0);
+                reimburse.setResolverId(0);
+                
                 reimbursements.add(reimburse);
             }
             return reimbursements;
@@ -119,7 +128,7 @@ public class ReimbursementDAO implements IReimbursementDAO
     }
     
     @Override
-    public Reimbursement insertReimbursement(BigDecimal amount, java.io.File receiptFile, String description, int authorId, int typeId) throws ConnectionException, InvalidUserException, SQLException {
+    public Reimbursement insertReimbursement(BigDecimal amount, java.io.File receiptFile, String fileName, String description, int authorId, int typeId) throws ConnectionException, InvalidUserException, SQLException {
 
     	Connection connection = null;
         try {
