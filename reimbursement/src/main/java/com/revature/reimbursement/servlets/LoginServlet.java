@@ -96,7 +96,7 @@ public class LoginServlet extends HttpServlet
 		UserDAO userDAO = new UserDAO();
         User user;
 		try {
-			user = userDAO.logIn("chris", "collins");
+			user = userDAO.logIn("henry", "password");
 			
 	        //binds user to session
 	        HttpSession session = request.getSession();

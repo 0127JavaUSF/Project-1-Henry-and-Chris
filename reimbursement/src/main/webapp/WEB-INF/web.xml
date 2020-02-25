@@ -30,8 +30,12 @@
 		<servlet-class>com.revature.reimbursement.servlets.InsertReimbursementServlet</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>insertMultiPart</servlet-name>
+		<servlet-name>insert-multipart</servlet-name>
 		<servlet-class>com.revature.reimbursement.servlets.InsertReimbursementMultiPartServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>get-user-reimb</servlet-name>
+		<servlet-class>com.revature.reimbursement.servlets.GetUserReimbursements</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
@@ -43,8 +47,12 @@
 		<url-pattern>/insert</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>insertMultiPart</servlet-name>
-		<url-pattern>/insertMultiPart</url-pattern>
+		<servlet-name>insert-multipart</servlet-name>
+		<url-pattern>/insert-multipart</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>get-user-reimb</servlet-name>
+		<url-pattern>/get-user-reimb</url-pattern>
 	</servlet-mapping>
 	
 	<!-- do not use since this is a single page site

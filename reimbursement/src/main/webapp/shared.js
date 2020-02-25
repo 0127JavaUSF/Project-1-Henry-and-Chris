@@ -138,7 +138,7 @@ class Shared {
 
         const select = document.getElementById(tagId);
 
-        for (let i = 0; i <= STATUSES.length; i++) {
+        for (let i = 0; i < STATUSES.length; i++) {
 
             const option = document.createElement("option");
             option.value = i; //this is the typeId
@@ -158,7 +158,7 @@ class Shared {
 
         const select = document.getElementById(tagId);
 
-        for (let i = 0; i <= TYPES.length; i++) {
+        for (let i = 0; i < TYPES.length; i++) {
 
             const option = document.createElement("option");
             option.value = i; //this is the typeId
@@ -190,15 +190,6 @@ class Shared {
     //this works with file upload (such as receipt)
     async postRequestMultiPart(postParams, file, url, callback) {
         try {
-            //encode post params
-            // let formBody = [];
-            // for (let property in postParams) {
-            //   const encodedKey = encodeURIComponent(property);
-            //   const encodedValue = encodeURIComponent(postParams[property]);
-            //   formBody.push(encodedKey + "=" + encodedValue);
-            // }
-            // formBody = formBody.join("&");
-
             //append file
             const data = new FormData();
             data.append('file', file);
@@ -206,19 +197,11 @@ class Shared {
             //append post params
             for (let property in postParams) {
 
-                // const encodedKey = encodeURIComponent(property);
-                // const encodedValue = encodeURIComponent(postParams[property]);
-                // data.append(encodedKey, encodedValue);
-
                 data.append(property, postParams[property]);
             }
 
             const config = {
                 method: 'POST',
-                //headers should not be set manually for multi-part form data
-                // headers: {
-                //     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-                // },
                 body: data
             }
 
@@ -355,8 +338,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if(typeof employeeService !== "undefined") {
-
-        employeeService.fillTicketTable();
 
         employeeService.addNewTicketListener();
     
