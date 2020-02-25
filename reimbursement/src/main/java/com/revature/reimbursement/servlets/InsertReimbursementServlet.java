@@ -63,7 +63,7 @@ public class InsertReimbursementServlet extends HttpServlet {
         insertReimbursementDAO(null, amount, description, typeId, request, response);
 	}
 	
-	public static void insertReimbursementDAO(InputStream receipt, String amount, String description, String typeId, HttpServletRequest request, HttpServletResponse response) {
+	public static void insertReimbursementDAO(java.io.File receipt, String amount, String description, String typeId, HttpServletRequest request, HttpServletResponse response) {
 		
         //get user from session
         HttpSession session = request.getSession();
