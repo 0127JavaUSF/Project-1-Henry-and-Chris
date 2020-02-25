@@ -27,7 +27,9 @@ public class Reimbursement
     private String description;
     private String receipt;
     private int authorId;
+    private String authorString;
     private int resolverId;
+    private String resolverString;
     private int statusId;
     private int typeId;
     
@@ -190,5 +192,21 @@ public class Reimbursement
 
 	public void setResolvedString(String resolvedString) {
 		this.resolvedString = resolvedString;
+	}
+
+	public String getAuthorString() {
+		return authorString;
+	}
+
+	public void setAuthorString(String authorString) {
+		this.authorString = authorString;
+	}
+
+	public String getResolverString() {
+		return resolverString;
+	}
+
+	public void setResolverString(String resolverString) {
+		this.resolverString = resolverString;
 	}
 }

@@ -62,8 +62,8 @@ public class InsertReimbursementMultiPartServlet extends HttpServlet {
 	    File file = new File(fileName);
         
 	    //get post parameters
-        String amount = "1.25";
-    	String description = "testing description";
+        String amount = "0";
+    	String description = "description";
         String typeId = "2";
         for(Part part : request.getParts()) {
         	
@@ -78,7 +78,7 @@ public class InsertReimbursementMultiPartServlet extends HttpServlet {
         	}
         }
         
-        InsertReimbursementServlet.insertReimbursementDAO(receipt, fileName, amount, description, typeId, request, response);
+        InsertReimbursementServlet.insertReimbursementDAO(file, fileName, amount, description, typeId, request, response);
 	}
 	
 	//returns the post parameter value in the Part

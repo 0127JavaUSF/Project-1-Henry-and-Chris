@@ -111,6 +111,13 @@ public class ReimbursementDAO implements IReimbursementDAO
                 Reimbursement reimburse = new Reimbursement();
                 setReimbursementFromResultSet(reimburse, result);
                 
+                //reimburse.setAuthorString();
+                //reimburse.setResolverString();
+                
+                //do not send primary keys to client
+                reimburse.setAuthorId(0);
+                reimburse.setResolverId(0);
+                
                 reimbursements.add(reimburse);
             }
             return reimbursements;
@@ -121,7 +128,7 @@ public class ReimbursementDAO implements IReimbursementDAO
     }
     
     @Override
-    public Reimbursement insertReimbursement(BigDecimal amount, InputStream receiptFile, String receiptFileName, String description, int authorId, int typeId) throws ConnectionException, InvalidUserException, SQLException {
+    public Reimbursement insertReimbursement(BigDecimal amount, java.io.File receiptFile, String fileName, String description, int authorId, int typeId) throws ConnectionException, InvalidUserException, SQLException {
 
     	Connection connection = null;
         try {
@@ -154,7 +161,6 @@ public class ReimbursementDAO implements IReimbursementDAO
                 }
                 
                 int id = reimburse.getId();
-
                 String bucketName = System.getenv("AWS_BUCKET_NAME");
                 // creates s3 object
                 final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
@@ -168,6 +174,22 @@ public class ReimbursementDAO implements IReimbursementDAO
                 PreparedStatement prepared2 = connection.prepareStatement(sql2);
                 prepared2.setString(1, recieptUrl.toString());
                 prepared2.setInt(2, id);
+                
+                int result2 = prepared2.executeUpdate();
+                if (result2 == 1)
+                {
+                	connection.commit();
+                	//sets the url for the reimburse object to retrieve the image
+                	reimburse.setReceipt(recieptUrl.toString());
+                	
+                	return reimburse;
+                }
+                else {
+                	if(connection != null) {
+                		connection.rollback();
+                	}
+                    throw new SQLException();
+                }
             }
             
             throw new InvalidUserException();
@@ -178,12 +200,6 @@ public class ReimbursementDAO implements IReimbursementDAO
         	}
             throw new SQLException();
         }
-        catch (IOException e) {
-        	if(connection != null) {
-        		connection.rollback();
-        	}
-            throw new SQLException();
-		}
     }
     
     @Override

@@ -1,5 +1,6 @@
 package com.revature.reimbursement.servlets;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -63,7 +64,7 @@ public class InsertReimbursementServlet extends HttpServlet {
         insertReimbursementDAO(null, null, amount, description, typeId, request, response);
 	}
 	
-	public static void insertReimbursementDAO(InputStream receipt, String receiptFileName, String amount, String description, String typeId, HttpServletRequest request, HttpServletResponse response) {
+	public static void insertReimbursementDAO(File receipt, String receiptFileName, String amount, String description, String typeId, HttpServletRequest request, HttpServletResponse response) {
 		
         //get user from session
         HttpSession session = request.getSession();
