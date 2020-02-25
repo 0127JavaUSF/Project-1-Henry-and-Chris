@@ -39,10 +39,13 @@ public class LoginServlet extends HttpServlet
 	
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+				
+		//avoid CORS errors
+		resp.addHeader("Access-Control-Allow-Headers", "authorization");
+		resp.addHeader("Access-Control-Allow-Methods", "GET POST PUT DELETE");
+		resp.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
 		
-		//route to doPost for testing. this servlet only accepts POST anyway
-		
-		doPost(req, resp);
+		super.service(req, resp);
 	}
     
 	@Override
@@ -86,4 +89,21 @@ public class LoginServlet extends HttpServlet
             response.setStatus(ConnectionUtil.STATUS_SERVER_ERROR);
         }
     }
+	
+	//called in other servlets during testing so user is logged in
+	static public void LoginTest(HttpServletRequest request) {
+		
+		UserDAO userDAO = new UserDAO();
+        User user;
+		try {
+			user = userDAO.logIn("chris", "collins");
+			
+	        //binds user to session
+	        HttpSession session = request.getSession();
+	        session.setAttribute("user", user);
+
+		} catch (Exception e) {
+
+		}		
+	}
 }

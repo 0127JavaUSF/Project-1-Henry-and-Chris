@@ -22,7 +22,7 @@ class LoginService {
 			password: password_
 		};
 
-		shared.postRequest(postParams, "http://localhost:8080/reimbursement/login", (json, errorMessage) => {
+		shared.postRequest(postParams, "http://localhost:8080/reimbursement/login", (json, errorCode, errorMessage) => {
 
 			const error = document.getElementById("login_error");
 			if (errorMessage) {

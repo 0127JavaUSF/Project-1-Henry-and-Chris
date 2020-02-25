@@ -1,8 +1,10 @@
 package com.revature.reimbursement.daos;
 
 import com.revature.reimbursement.exceptions.InvalidReimbursementException;
+import com.revature.reimbursement.exceptions.InvalidUserException;
 
 import java.io.File;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.ResultSet;
@@ -110,7 +112,7 @@ public class ReimbursementDAO implements IReimbursementDAO
     }
     
     @Override
-    public Reimbursement insertReimbursement(BigDecimal amount, File receiptFile, String description, int authorId, int typeId) throws ConnectionException, SQLException {
+    public Reimbursement insertReimbursement(BigDecimal amount, InputStream receiptFile, String description, int authorId, int typeId) throws ConnectionException, InvalidUserException, SQLException {
 
     	Connection connection = null;
         try {
@@ -135,43 +137,49 @@ public class ReimbursementDAO implements IReimbursementDAO
             	
                 Reimbursement reimburse = new Reimbursement();
                 setReimbursementFromResultSet(reimburse, result);
-                if (receiptFile != null)
+                
+//                if(receiptFile == null)
                 {
-                int id = reimburse.getId();
-                String bucketName = System.getenv("AWS_BUCKET_NAME");
-                final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
-                s3.putObject(bucketName, Integer.toString(id) , receiptFile);
-                URL recieptUrl = s3.getUrl(bucketName, Integer.toString(id));
-                
-                String sql2 = "UPDATE ers_reimbursement "
-                		+ "SET reimb_reciept = ? "
-                		+ "WHERE reimb_id = ?;";
-                
-                PreparedStatement prepared2 = connection.prepareStatement(sql2);
-                prepared2.setString(1, recieptUrl.toString());
-                prepared2.setInt(2, id);
-                
-                int result2 = prepared.executeUpdate();
-                if (result2 == 1)
-                {
-                	connection.commit();
-                	reimburse.setReceipt(recieptUrl.toString());
-                }
-                else {
-                	connection.rollback();
+                    connection.commit();
+                    return reimburse;
                 }
                 
-                }
-                
-                
-                connection.commit();
-                
-                return reimburse;
+//                int id = reimburse.getId();
+//                String bucketName = System.getenv("AWS_BUCKET_NAME");
+//                final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
+//                s3.putObject(bucketName, Integer.toString(id) , receiptFile);
+//                URL recieptUrl = s3.getUrl(bucketName, Integer.toString(id));
+//                
+//                String sql2 = "UPDATE ers_reimbursement "
+//                		+ "SET reimb_reciept = ? "
+//                		+ "WHERE reimb_id = ?;";
+//                
+//                PreparedStatement prepared2 = connection.prepareStatement(sql2);
+//                prepared2.setString(1, recieptUrl.toString());
+//                prepared2.setInt(2, id);
+//                
+//                int result2 = prepared.executeUpdate();
+//                if (result2 == 1)
+//                {
+//                	connection.commit();
+//                	reimburse.setReceipt(recieptUrl.toString());
+//                	
+//                	return reimburse;
+//                }
+//                else {
+//                	if(connection != null) {
+//                		connection.rollback();
+//                	}
+//                    throw new SQLException();
+//                }
             }
-            return null;
+            
+            throw new InvalidUserException();
         }
         catch (SQLException e) {
-        	connection.rollback();
+        	if(connection != null) {
+        		connection.rollback();
+        	}
             throw new SQLException();
         }
     }

@@ -33,6 +33,17 @@ class Shared {
         this.user = null;
     }
 
+    addClass(elementId, className) {
+        const element = document.getElementById(elementId);
+        if(element.classList.contains(className) === false) {
+            element.classList.add(className);
+        }
+    }
+
+    removeClass(elementId, className) {
+        document.getElementById(elementId).classList.remove(className);
+    }
+
     addNavBarClickListeners() {
 
         const myTickets = document.getElementById(NAV_A[NAV_MY_TICKETS]);
@@ -81,13 +92,10 @@ class Shared {
         for(let i = 0; i < NAV_LI.length; i++) {
 
             //make not active
-            document.getElementById(NAV_LI[i]).classList.remove("active");
+            this.removeClass(NAV_LI[i], "active");
 
             //make disabled
-            const myTicketsA = document.getElementById(NAV_A[i]);
-            if(myTicketsA.classList.contains("disabled") === false) {
-                myTicketsA.classList.add("disabled");
-            }
+            this.addClass(NAV_A[i], "disabled");
         }
     }
 
@@ -109,24 +117,20 @@ class Shared {
         const menuItemLI = document.getElementById(NAV_LI[navIndex]);
         if(isActive) {
             //make active
-            if(menuItemLI.classList.contains("active") === false) {
-                menuItemLI.classList.add("active");
-            }
+            this.addClass(NAV_LI[navIndex], "active");
         }
         else {
-            menuItemLI.classList.remove("active");
+            this.removeClass(NAV_LI[navIndex], "active");
         }
         
         const menuItemA = document.getElementById(NAV_A[navIndex]);
         if(isDisabled) {
-            //make active
-            if(menuItemA.classList.contains("disabled") === false) {
-                menuItemA.classList.add("disabled");
-            }
+            //make disabled
+            this.addClass(NAV_A[navIndex], "disabled");
         }
         else {
             //remove disabled
-            menuItemA.classList.remove("disabled");
+            this.removeClass(NAV_A[navIndex], "disabled");
         }
     }
 
@@ -170,14 +174,85 @@ class Shared {
         }
     }
 
+    //returns a string in format $X.XX
+    formatCurrency(amount) {
+
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2
+        })
+
+        return formatter.format(amount);
+    }
+
+    //postParams should be an object literal
+    //this works with file upload (such as receipt)
+    async postRequestMultiPart(postParams, file, url, callback) {
+        try {
+            //encode post params
+            // let formBody = [];
+            // for (let property in postParams) {
+            //   const encodedKey = encodeURIComponent(property);
+            //   const encodedValue = encodeURIComponent(postParams[property]);
+            //   formBody.push(encodedKey + "=" + encodedValue);
+            // }
+            // formBody = formBody.join("&");
+
+            //append file
+            const data = new FormData();
+            data.append('file', file);
+
+            //append post params
+            for (let property in postParams) {
+
+                // const encodedKey = encodeURIComponent(property);
+                // const encodedValue = encodeURIComponent(postParams[property]);
+                // data.append(encodedKey, encodedValue);
+
+                data.append(property, postParams[property]);
+            }
+
+            const config = {
+                method: 'POST',
+                //headers should not be set manually for multi-part form data
+                // headers: {
+                //     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                // },
+                body: data
+            }
+
+            const response = await fetch(url, config);
+
+            //if error
+            if (response.status >= 400) {
+
+                const test = await response.text();
+
+                let errorMessage = this.postError(response.status);
+
+                callback({}, response.status, errorMessage);
+                return;
+            }
+
+            const json = await response.json()
+
+            callback(json, 200, "");
+        }
+        catch (error) {
+
+            callback({}, 404, "Error");
+        }
+    }
+
     //postParams should be an object literal
     async postRequest(postParams, url, callback) {
         try {
             //encode post params
-            var formBody = [];
-            for (var property in postParams) {
-              var encodedKey = encodeURIComponent(property);
-              var encodedValue = encodeURIComponent(postParams[property]);
+            let formBody = [];
+            for (let property in postParams) {
+              const encodedKey = encodeURIComponent(property);
+              const encodedValue = encodeURIComponent(postParams[property]);
               formBody.push(encodedKey + "=" + encodedValue);
             }
             formBody = formBody.join("&");
@@ -198,25 +273,64 @@ class Shared {
             //if error
             if (response.status >= 400) {
 
-                let errorMessage;
-                switch (response.status) {
-                    case 401: errorMessage = "Unauthorized Error"; break;
-                    case 500: errorMessage = "Server Error"; break;
-                    case 503: errorMessage = "Database Connection Error"; break;
-                    default: errorMessage = "Error";
-                }
+                let errorMessage = this.postError(response.status);
 
-                callback({}, errorMessage);
+                callback({}, response.status, errorMessage);
+                return;
+            }
+
+            const json = await response.json();
+
+            callback(json, 200, "");
+        }
+        catch (error) {
+
+            callback({}, 404, "Error");
+        }
+    }
+
+    //postParams should be an object literal
+    //this version works with Jackson marshalling in Java
+    async postRequestJSON(postParams, url, callback) {
+        try {    
+            const config = {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(postParams)
+            }
+
+            const response = await fetch(url, config);
+
+            //if error
+            if (response.status >= 400) {
+
+                let errorMessage = this.postError(response.status);
+
+                callback({}, response.status, errorMessage);
                 return;
             }
 
             const json = await response.json()
 
-            callback(json, "");
+            callback(json, 200, "");
         }
         catch (error) {
 
-            callback({}, "Error");
+            callback({}, 404, "Error");
+        }
+    }
+
+    postError(responseStatus) {
+
+        switch (responseStatus) {
+            case 401: return "Unauthorized Error";
+            case 403: return "Forbidden Error";
+            case 500: return "Server Error";
+            case 503: return "Database Connection Error";
+            default: return "Error";
         }
     }
 
