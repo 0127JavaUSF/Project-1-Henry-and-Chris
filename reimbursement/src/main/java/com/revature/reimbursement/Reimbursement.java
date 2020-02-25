@@ -2,6 +2,9 @@ package com.revature.reimbursement;
 
 import java.sql.Blob;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
 public class Reimbursement
@@ -18,7 +21,9 @@ public class Reimbursement
     private int id;
     private BigDecimal amount;
     private Timestamp submitted;
+    private String submittedString;
     private Timestamp resolved;
+    private String resolvedString;
     private String description;
     private String receipt;
     private int authorId;
@@ -29,15 +34,16 @@ public class Reimbursement
     public void init(int id, BigDecimal amount, Timestamp submitted, Timestamp resolved, String description, String receipt, int authorId, int resolverId, int statusId, int typeId) {
         this.id = id;
         this.amount = amount;
-        this.submitted = submitted;
-        this.resolved = resolved;
         this.description = description;
         this.receipt = receipt;
         this.authorId = authorId;
         this.resolverId = resolverId;
         this.statusId = statusId;
         this.typeId = typeId;
-    }
+
+        this.setSubmitted(submitted);
+        this.setResolved(resolved);
+}
     
     public int getId() {
         return this.id;
@@ -61,6 +67,13 @@ public class Reimbursement
     
     public void setSubmitted(final Timestamp submitted) {
         this.submitted = submitted;
+        
+        if(submitted == null) {
+        	this.submittedString = "";
+        }
+        else {
+        	this.submittedString = new SimpleDateFormat("M/d/yyyy h:mm aa").format(submitted);
+        }
     }
     
     public Timestamp getResolved() {
@@ -69,6 +82,13 @@ public class Reimbursement
     
     public void setResolved(final Timestamp resolved) {
         this.resolved = resolved;
+        
+        if(resolved == null) {
+        	this.resolvedString = "";
+        }
+        else {
+        	this.resolvedString = new SimpleDateFormat("M/d/yyyy h:mm aa").format(resolved);
+        }
     }
     
     public String getDescription() {
@@ -155,4 +175,20 @@ public class Reimbursement
     public void setTypeId(final int typeId) {
         this.typeId = typeId;
     }
+
+	public String getSubmittedString() {
+		return submittedString;
+	}
+
+	public void setSubmittedString(String submittedString) {
+		this.submittedString = submittedString;
+	}
+
+	public String getResolvedString() {
+		return resolvedString;
+	}
+
+	public void setResolvedString(String resolvedString) {
+		this.resolvedString = resolvedString;
+	}
 }

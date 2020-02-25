@@ -2,6 +2,7 @@
 class EmployeeService {
 
     constructor() {
+        this.tickets = [];
         this.ticketRowTotal = 0;
     }
 
@@ -63,13 +64,13 @@ class EmployeeService {
                 const files = receiptElement.files;
 
                 if(files.length > 0) {
-                    shared.postRequestMultiPart(params, files[0], "http://localhost:8080/reimbursement/insertMultiPart", (json, errorCode, errorMessage)=> {
+                    shared.postRequestMultiPart(params, files[0], "http://localhost:8080/reimbursement/insert-multipart", (json, statusCode, errorMessage)=> {
 
                         this.onSubmitTicket(errorMessage, json);
                     });
                 }
                 else {
-                    shared.postRequest(params, "http://localhost:8080/reimbursement/insert", (json, errorCode, errorMessage)=> {
+                    shared.postRequest(params, "http://localhost:8080/reimbursement/insert", (json, statusCode, errorMessage)=> {
 
                         this.onSubmitTicket(errorMessage, json);
                     });
@@ -96,9 +97,9 @@ class EmployeeService {
 
     onSubmitTicket(errorMessage, ticket) {
 
-        const error = document.getElementById("submit_error");
         if (errorMessage) {
 
+            const error = document.getElementById("submit_error");
             error.innerText = errorMessage;
             error.classList.remove("hide");
         }
@@ -106,6 +107,7 @@ class EmployeeService {
             shared.addClass("submit_error", "hide");
 
             //update ticket table
+            this.tickets.push(ticket);
             this.addRowToTicketTable(ticket);
 
             //clear form
@@ -113,42 +115,33 @@ class EmployeeService {
 
             //close the section
             document.getElementById("new_ticket_form").style.display = "none";
+
+            //enable new ticket button
+            const button = document.getElementById("new_ticket_button");
+            button.disabled = false;
         }
     }
 
     fillTicketTable() {
 
-        //todo: get from server
-
-        //pretend this is the JSON response
-        const response = [
-            {
-                id: "1",
-                amount: 200.00,
-                submitted: "Today",
-                resolved: "",
-                description: "Plane ticket.",
-                receipt: "https://my-project-1-bucket.s3.amazonaws.com/1",
-                statusId: 1,
-
-                typeId: 2
-            },
-            {
-                id: "2",
-                amount: 150.00,
-                submitted: "Yesterday",
-                resolved: "",
-                description: "Company picnic.",
-                statusId: 3,
-                receipt: "https://my-project-1-bucket.s3.amazonaws.com/1",
-                typeId: 3
-            }
-        ];
-
-        for (let ticket of response) {
-
-            this.addRowToTicketTable(ticket);
+        //if we already have tickets from server
+        if(this.tickets.length > 0) {
+            return;
         }
+
+        //get user tickets
+        shared.postRequest( {}, "http://localhost:8080/reimbursement/get-user-reimb", (json, statusCode, errorMessage)=> {
+
+            if(!errorMessage) {
+
+                this.tickets = json;
+
+                for (let ticket of this.tickets) {
+
+                    this.addRowToTicketTable(ticket);
+                }
+            }
+        });
     }
 
     addRowToTicketTable(ticket) {
@@ -164,7 +157,7 @@ class EmployeeService {
         tr.setAttribute("data-target", "#collaspe_div" + this.ticketRowTotal);            
 
         shared.setTableCell(tr, ticket.id);
-        shared.setTableCell(tr, ticket.submitted);
+        shared.setTableCell(tr, ticket.submittedString);
         shared.setTableCell(tr, TYPES[ticket.typeId]);
         shared.setTableCell(tr, shared.formatCurrency(ticket.amount));
         shared.setTableCell(tr, STATUSES[ticket.statusId]);
@@ -198,6 +191,8 @@ class EmployeeService {
         const receiptImg = document.createElement("img");
         div.appendChild(receiptImg);
         receiptImg.setAttribute("src", "/reimbursement/receipt.jpeg");
+        //once receipts work, uncomment this code
+        //receiptImg.setAttribute("src", ticket.receipt);
         receiptImg.setAttribute("alt", "attachment");
 
         //when image loads
@@ -244,6 +239,8 @@ class EmployeeService {
         shared.setNavBar(NAV_MY_TICKETS, true, true);
         shared.setNavBar(NAV_MANAGE_TICKETS, false, false);
         shared.setNavBar(NAV_LOG_OUT, false, false);
+
+        this.fillTicketTable();
     }
 
     validateNewTicketForm() {
@@ -254,33 +251,35 @@ class EmployeeService {
         const amountRequired = document.getElementById("amount_required");
 
         const noDollarSign = amount.value.replace('$', ''); //remove dollar sign
-        const amountNumber = this.getNewTicketAmount();
+        const amountNumber = Number.parseFloat(noDollarSign);
 
         //if amount is invalid
         if (!amountNumber || Number.isNaN(amountNumber) || amountNumber === 0) {
             isValid = false;
-            shared.removeClass("amount_text", "hide");
+            amountRequired.classList.remove("hide");
         }
         else {
-            shared.addClass("amount_text", "hide");
+            amountRequired.classList.add("hide");
         }
 
         const type = document.getElementById("type_select");
+        const typeRequired = document.getElementById("select_required");
         if (type.value == 0) { //if type not selected
             isValid = false;
-            shared.removeClass("type_select", "hide");
+            typeRequired.classList.remove("hide");
         }
         else {
-            shared.addClass("type_select", "hide");
+            typeRequired.classList.add("hide");
         }
 
         const description = document.getElementById("description_textarea");
-        if (!description.value) { //if description empty
+        const descriptionRequired = document.getElementById("description_required");
+        if (!description.value) { //if type not selected
             isValid = false;
-            shared.removeClass("description_textarea", "hide");
+            descriptionRequired.classList.remove("hide");
         }
         else {
-            shared.addClass("description_textarea", "hide");
+            descriptionRequired.classList.add("hide");
         }
 
         return isValid;
