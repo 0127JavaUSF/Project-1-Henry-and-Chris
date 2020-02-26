@@ -26,3 +26,7 @@
 .revature_orange:focus {
 	box-shadow: 0 0 0 .2rem rgba(242, 105, 37, .5) !important;
 }
+
+.username {
+	color: rgb(154, 157, 160) !important;
+}

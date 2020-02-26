@@ -42,8 +42,8 @@ public class GetUserReimbursements extends HttpServlet {
 		resp.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
 		
 		//test
-		LoginServlet.LoginTest(req); //login for testing purposes
-		doPost(req, resp);
+//		LoginServlet.LoginTest(req); //login for testing purposes
+//		doPost(req, resp);
 		
 		super.service(req, resp);
 	}

@@ -342,9 +342,15 @@ document.addEventListener("DOMContentLoaded", function () {
         employeeService.addNewTicketListener();
     
         employeeService.addAmountListener();
+
+        employeeService.addTypeListener();
+
+        employeeService.addDescriptionListener();
     
         shared.fillTypeSelect("type_select");
-    
+
+        employeeService.addClearReceiptListener();
+
         employeeService.addSubmitTicketListener();    
     }
 

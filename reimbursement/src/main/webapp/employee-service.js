@@ -4,6 +4,7 @@ class EmployeeService {
     constructor() {
         this.tickets = [];
         this.ticketRowTotal = 0;
+        this.lastUsername = "";
     }
 
     addAmountListener() {
@@ -20,6 +21,37 @@ class EmployeeService {
             const amountInDollars = shared.formatCurrency(amount.value);
 
             amount.value = amountInDollars;
+
+            this.validateAmount();
+        });
+    }
+
+    addClearReceiptListener() {
+
+        const button = document.getElementById("clear_receipt_button");
+        button.addEventListener('click', () => {
+
+            //clear selected receipt file
+            const filePicker = document.getElementById("receipt_file");
+            filePicker.value = "";
+        });
+    }
+
+    addTypeListener() {
+
+        const type = document.getElementById("type_select");
+        type.addEventListener('blur', () => {
+
+            this.validateType();
+        });
+    }
+
+    addDescriptionListener() {
+
+        const description = document.getElementById("description_textarea");
+        description.addEventListener('blur', () => {
+
+            this.validateDescription();
         });
     }
 
@@ -124,10 +156,15 @@ class EmployeeService {
 
     fillTicketTable() {
 
-        //if we already have tickets from server
-        if(this.tickets.length > 0) {
+        //if same user (we already have tickets)
+        if(this.lastUsername === shared.user.username) {
             return;
         }
+        this.lastUsername = shared.user.username;
+
+        //clear table
+        const ticketBody = document.getElementById("ticket_body");
+        ticketBody.innerHTML = "";
 
         //get user tickets
         shared.postRequest( {}, "http://localhost:8080/reimbursement/get-user-reimb", (json, statusCode, errorMessage)=> {
@@ -243,10 +280,7 @@ class EmployeeService {
         this.fillTicketTable();
     }
 
-    validateNewTicketForm() {
-
-        let isValid = true;
-
+    validateAmount() {
         const amount = document.getElementById("amount_text");
         const amountRequired = document.getElementById("amount_required");
 
@@ -254,6 +288,7 @@ class EmployeeService {
         const amountNumber = Number.parseFloat(noDollarSign);
 
         //if amount is invalid
+        let isValid = true;
         if (!amountNumber || Number.isNaN(amountNumber) || amountNumber === 0) {
             isValid = false;
             amountRequired.classList.remove("hide");
@@ -262,8 +297,14 @@ class EmployeeService {
             amountRequired.classList.add("hide");
         }
 
+        return isValid;
+    }
+
+    validateType() {
+
         const type = document.getElementById("type_select");
         const typeRequired = document.getElementById("select_required");
+        let isValid = true;
         if (type.value == 0) { //if type not selected
             isValid = false;
             typeRequired.classList.remove("hide");
@@ -271,15 +312,33 @@ class EmployeeService {
         else {
             typeRequired.classList.add("hide");
         }
+        return isValid;
+    }
 
+    validateDescription() {
         const description = document.getElementById("description_textarea");
         const descriptionRequired = document.getElementById("description_required");
+        let isValid = true;
         if (!description.value) { //if type not selected
             isValid = false;
             descriptionRequired.classList.remove("hide");
         }
         else {
             descriptionRequired.classList.add("hide");
+        }
+        return isValid;
+    }
+
+    validateNewTicketForm() {
+
+        let isValid = this.validateAmount();
+
+        if(!this.validateType()) {
+            isValid = false;
+        }
+
+        if(!this.validateDescription()) {
+            isValid = false;
         }
 
         return isValid;
