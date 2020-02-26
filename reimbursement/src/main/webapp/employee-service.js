@@ -2,9 +2,9 @@
 class EmployeeService {
 
     constructor() {
+        this.lastUsername = "";
         this.tickets = [];
         this.ticketRowTotal = 0;
-        this.lastUsername = "";
     }
 
     addAmountListener() {
@@ -40,7 +40,7 @@ class EmployeeService {
     addTypeListener() {
 
         const type = document.getElementById("type_select");
-        type.addEventListener('blur', () => {
+        type.addEventListener('change', () => {
 
             this.validateType();
         });
@@ -118,7 +118,7 @@ class EmployeeService {
         document.getElementById("amount_text").value = "";
         shared.addClass("amount_required", "hide");
 
-        const type = document.getElementById("type_select").value = 0;
+        document.getElementById("type_select").value = 0;
         shared.addClass("select_required", "hide");
 
         document.getElementById("description_textarea").value = "";
@@ -166,7 +166,7 @@ class EmployeeService {
         const ticketBody = document.getElementById("ticket_body");
         ticketBody.innerHTML = "";
         this.ticketRowTotal = 0;
-        
+
         //get user tickets
         shared.postRequest( {}, "http://localhost:8080/reimbursement/get-user-reimb", (json, statusCode, errorMessage)=> {
 
