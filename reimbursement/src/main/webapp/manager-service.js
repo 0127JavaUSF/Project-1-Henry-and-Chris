@@ -114,8 +114,12 @@ class ManagerService {
         div.appendChild(p);
         p.innerText = ticket.description;
 
+        const imgDiv = document.createElement("div");
+        imgDiv.className = "text-center";
+        div.appendChild(imgDiv);
+
         const receiptImg = document.createElement("img");
-        div.appendChild(receiptImg);
+        imgDiv.appendChild(receiptImg);
         receiptImg.setAttribute("src", "https://my-project-1-bucket.s3.amazonaws.com/1");
         receiptImg.setAttribute("alt", "attachment");
         
@@ -126,18 +130,18 @@ class ManagerService {
             div.appendChild(outer);
 
             const inner = document.createElement("div");
-            inner.className = "btn-group";
+            inner.className = "btn-group w-50 mt-4 mb-3";
             outer.appendChild(inner);
             
             const approve = document.createElement("input");
             approve.type = "button";
-            approve.className = "btn btn-primary revature_orange";
+            approve.className = "btn btn-success";
             approve.value = "Approve";
             inner.appendChild(approve);
 
             const deny = document.createElement("input");
             deny.type = "button";
-            deny.className = "btn btn-primary revature_orange";
+            deny.className = "btn btn-danger";
             deny.value = "Deny";
             inner.appendChild(deny);
         }
