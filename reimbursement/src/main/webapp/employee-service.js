@@ -226,8 +226,12 @@ class EmployeeService {
         div.appendChild(p);
         p.innerText = ticket.description;
 
+        const imgDiv = document.createElement("div");
+        imgDiv.className = "text-center";
+        div.appendChild(imgDiv);
+
         const receiptImg = document.createElement("img");
-        div.appendChild(receiptImg);
+        imgDiv.appendChild(receiptImg);
         receiptImg.setAttribute("src", "/reimbursement/receipt.jpeg");
         //once receipts work, uncomment this code
         //receiptImg.setAttribute("src", ticket.receipt);
