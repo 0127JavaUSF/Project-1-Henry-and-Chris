@@ -63,36 +63,6 @@ public class ReimbursementDAO implements IReimbursementDAO
     }
     
     @Override
-    public List<Reimbursement> getReimbursementsByStatus(int statusId) throws ConnectionException, SQLException {
-    	
-    	try(Connection connection = ConnectionUtil.getConnection()) {
-    		if (connection == null) {
-                throw new ConnectionException();
-            }
-
-    		String sql = "SELECT * FROM ers_reimbursement WHERE reimb_status_id = ?;";
-    		
-            PreparedStatement prepared = connection.prepareStatement(sql);
-            prepared.setInt(1, statusId);
-            
-            ResultSet result = prepared.executeQuery();
-            
-            List<Reimbursement> reimbursements = new LinkedList<Reimbursement>();          
-            while (result.next()) {
-            	
-                Reimbursement reimburse = new Reimbursement();
-                setReimbursementFromResultSet(reimburse, result);
-                
-                reimbursements.add(reimburse);
-            }
-            return reimbursements;
-        }
-        catch (SQLException e) {
-            throw new SQLException();
-        }
-    }
-    
-    @Override
     public List<Reimbursement> getAllReimbursements() throws ConnectionException, SQLException {
         
     	try(Connection connection = ConnectionUtil.getConnection()) {
@@ -205,12 +175,15 @@ public class ReimbursementDAO implements IReimbursementDAO
     }
     
     @Override
-    public void resolve(int reimbursementId, int resolverUserId, int statusId) throws ConnectionException, InvalidReimbursementException, SQLException {
+    public Reimbursement resolve(int reimbursementId, int resolverUserId, int statusId) throws ConnectionException, InvalidReimbursementException, SQLException {
 
-    	try(Connection connection = ConnectionUtil.getConnection()) {
+    	Connection connection = null;
+    	try {
+    		connection = ConnectionUtil.getConnection();
             if (connection == null) {
                 throw new ConnectionException();
             }
+            connection.setAutoCommit(false);
             
             String sql = "UPDATE ers_reimbursement SET reimb_resolver = ?, reimb_status_id = ?, reimb_resolved = CURRENT_TIMESTAMP WHERE reimb_id = ? RETURNING 1";
             
@@ -221,10 +194,40 @@ public class ReimbursementDAO implements IReimbursementDAO
             
             ResultSet result = prepared.executeQuery();
             if (!result.next()) {
+            	connection.rollback();
                 throw new InvalidReimbursementException();
             }
-        }
+            
+            sql = "SELECT r.*, concat(u1.user_first_name, ' ', u1.user_last_name) AS author, concat(u2.user_first_name, ' ', u2.user_last_name) AS resolver FROM ers_reimbursement AS r LEFT JOIN ers_users AS u1 ON r.reimb_author = u1.ers_user_id LEFT JOIN ers_users AS u2 ON r.reimb_resolver = u2.ers_user_id WHERE r.reimb_id = ?;";
+
+            prepared = connection.prepareStatement(sql);
+            prepared.setInt(1, reimbursementId);
+            
+            result = prepared.executeQuery();
+            if (result.next()) {
+            	
+                Reimbursement reimburse = new Reimbursement();
+                setReimbursementFromResultSet(reimburse, result);
+                
+                reimburse.setAuthorString(result.getString("author"));
+                reimburse.setResolverString(result.getString("resolver"));
+                
+                //do not send primary keys to client
+                reimburse.setAuthorId(0);
+                reimburse.setResolverId(0);
+                
+                connection.commit();
+                
+                return reimburse;
+            }    
+
+            connection.rollback();
+            throw new InvalidReimbursementException();
+    	}
         catch (SQLException e) {
+        	if(connection != null) {
+        		connection.rollback();
+        	}
             throw new SQLException();
         }
     }

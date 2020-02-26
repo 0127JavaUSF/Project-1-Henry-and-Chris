@@ -70,16 +70,28 @@ class ManagerService {
         }
     }
 
-    addRowToTicketTable(ticket) {
+    addRowToTicketTable(ticket, rowIndex = -1, tableRowElement = null, collapsedTableRowElement = null) {
 
         const body = document.getElementById("manage_ticket_body");
 
-        let tr = document.createElement("tr");
-        body.appendChild(tr);
+        if(rowIndex < 0) {
+            rowIndex = this.ticketRowTotal;
+            this.ticketRowTotal++;
+        }
 
-        tr.classList.add("clickable_tr");
-        tr.setAttribute("data-toggle", "collapse");
-        tr.setAttribute("data-target", "#collaspe_div" + this.ticketRowTotal);   
+        let tr;
+        if(tableRowElement) { //if table row passed to function
+            tr = tableRowElement;
+        }
+        else {
+            tr = document.createElement("tr");
+            body.appendChild(tr);
+    
+            tr.classList.add("clickable_tr");
+            tr.id = "manage_ticket_row" + rowIndex;
+            tr.setAttribute("data-toggle", "collapse");
+            tr.setAttribute("data-target", "#collaspe_div" + rowIndex);   
+        }
 
         shared.setTableCell(tr, ticket.id);
         shared.setTableCell(tr, ticket.submittedString);
@@ -90,8 +102,14 @@ class ManagerService {
         shared.setTableCell(tr, ticket.resolvedString);
         shared.setTableCell(tr, ticket.resolverString);
 
-        tr = document.createElement("tr");
-        body.appendChild(tr);
+        if(collapsedTableRowElement) {
+            tr = collapsedTableRowElement;
+        }
+        else {
+            tr = document.createElement("tr");
+            tr.id = "manage_ticket_subrow" + rowIndex;
+            body.appendChild(tr);    
+        }
 
         const td = document.createElement("td");
         tr.appendChild(td);
@@ -100,8 +118,8 @@ class ManagerService {
 
         //collapsable div
         const div = document.createElement("div");
-        td.appendChild(div);       
-        div.id = "collaspe_div" + this.ticketRowTotal;
+        td.appendChild(div);
+        div.id = "collaspe_div" + rowIndex;
         div.classList.add("collapse");
 
         //Description heading
@@ -129,8 +147,14 @@ class ManagerService {
             outer.className = "text-center";
             div.appendChild(outer);
 
+            const error = document.createElement("div");
+            error.className = "error my-2";
+            error.id = "resolve_reimb_error" + rowIndex;
+            error.innerText = "error placeholder"
+            outer.appendChild(error);
+
             const inner = document.createElement("div");
-            inner.className = "btn-group w-50 mt-4 mb-3";
+            inner.className = "btn-group w-50 my-2";
             outer.appendChild(inner);
             
             const approve = document.createElement("input");
@@ -139,11 +163,32 @@ class ManagerService {
             approve.value = "Approve";
             inner.appendChild(approve);
 
+            //pass custom data to approve button
+            approve.dataset.errorId = error.id;
+            approve.dataset.reimbId = ticket.id;
+            approve.dataset.rowIndex = rowIndex;
+            approve.dataset.statusId = STATUS_APPROVED;
+
             const deny = document.createElement("input");
             deny.type = "button";
             deny.className = "btn btn-danger";
             deny.value = "Deny";
             inner.appendChild(deny);
+
+            deny.dataset.errorId = error.id;
+            deny.dataset.reimbId = ticket.id;
+            deny.dataset.rowIndex = rowIndex;
+            deny.dataset.statusId = STATUS_DENIED;
+
+            approve.addEventListener("click", function() {
+
+                managerService.approveDenyPostRequest(this);
+            });
+
+            deny.addEventListener("click", function() {
+
+                managerService.approveDenyPostRequest(this);
+            });
         }
 
        // when image loads
@@ -157,8 +202,48 @@ class ManagerService {
             this.width *= percent;
             this.height *= percent;
         });
+    }
 
-        this.ticketRowTotal++;
+    approveDenyPostRequest(button) {
+
+        const postParams = {
+            reimbId: button.dataset.reimbId,
+            statusId: button.dataset.statusId
+        };
+        
+        shared.postRequest(postParams, "http://localhost:8080/reimbursement/resolve-reimb", function(updatedTicket, statusCode, errorMessage) {
+
+            if (errorMessage) {
+                const error = document.getElementById(this.dataset.errorId);
+                error.innerText = errorMessage;
+
+                shared.removeClass(this.dataset.errorId, "hide");
+            }
+            else {
+                shared.addClass(this.dataset.errorId, "hide");
+
+                managerService.onApproveDeny(this, updatedTicket);
+            }
+        }.bind(button)); //this is button
+    }
+
+    onApproveDeny(button, updatedTicket) {
+
+        const rowI = button.dataset.rowIndex;
+
+        //replace ticket with updated ticket
+        managerService.tickets[rowI] = updatedTicket;
+
+        //clear table row
+        const row = document.getElementById("manage_ticket_row" + rowI);
+        row.innerHTML = "";
+
+        //clear collapsable table row
+        const subrow = document.getElementById("manage_ticket_subrow" + rowI);
+        subrow.innerHTML = "";
+
+        //replace table row with updated ticket
+        managerService.addRowToTicketTable(updatedTicket, rowI, row, subrow);
     }
 
     showSection() {

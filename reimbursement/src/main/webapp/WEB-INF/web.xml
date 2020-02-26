@@ -41,6 +41,10 @@
 		<servlet-name>get-all-reimb</servlet-name>
 		<servlet-class>com.revature.reimbursement.servlets.GetAllReimbursementsServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>resolve-reimb</servlet-name>
+		<servlet-class>com.revature.reimbursement.servlets.ResolveReimbursementServlet</servlet-class>
+	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>login</servlet-name>
@@ -61,6 +65,10 @@
 	<servlet-mapping>
 		<servlet-name>get-all-reimb</servlet-name>
 		<url-pattern>/get-all-reimb</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>resolve-reimb</servlet-name>
+		<url-pattern>/resolve-reimb</url-pattern>
 	</servlet-mapping>
 	
 	<!-- do not use since this is a single page site
