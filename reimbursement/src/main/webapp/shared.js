@@ -186,7 +186,79 @@ class Shared {
         return formatter.format(amount);
     }
 
+    async getRequest(getParams, url, callback) {
+
+        //todo: concat getParams to end of url
+        //currently we do not need this functionality
+
+        try {
+            const config = {
+                method: 'GET',
+            }
+
+            const response = await fetch(url, config);
+
+            //if error
+            if (response.status >= 400) {
+
+                let errorMessage = this.postError(response.status);
+
+                callback({}, response.status, errorMessage);
+                return;
+            }
+
+            const json = await response.json();
+
+            callback(json, response.status, "");
+        }
+        catch (error) {
+
+            callback({}, 404, "Error");
+        }
+    }
+
     //postParams should be an object literal
+    async postRequest(postParams, url, callback) {
+        try {
+            //encode post params
+            let formBody = [];
+            for (let property in postParams) {
+              const encodedKey = encodeURIComponent(property);
+              const encodedValue = encodeURIComponent(postParams[property]);
+              formBody.push(encodedKey + "=" + encodedValue);
+            }
+            formBody = formBody.join("&");
+
+            const config = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: formBody
+            }
+
+            const response = await fetch(url, config);
+
+            //if error
+            if (response.status >= 400) {
+
+                let errorMessage = this.responseError(response.status);
+
+                callback({}, response.status, errorMessage);
+                return;
+            }
+
+            const json = await response.json();
+
+            callback(json, response.status, "");
+        }
+        catch (error) {
+
+            callback({}, 404, "Error");
+        }
+    }
+
+        //postParams should be an object literal
     //this works with file upload (such as receipt)
     async postRequestMultiPart(postParams, file, url, callback) {
         try {
@@ -212,7 +284,7 @@ class Shared {
 
                 const test = await response.text();
 
-                let errorMessage = this.postError(response.status);
+                let errorMessage = this.responseError(response.status);
 
                 callback({}, response.status, errorMessage);
                 return;
@@ -220,51 +292,7 @@ class Shared {
 
             const json = await response.json()
 
-            callback(json, 200, "");
-        }
-        catch (error) {
-
-            callback({}, 404, "Error");
-        }
-    }
-
-    //postParams should be an object literal
-    async postRequest(postParams, url, callback) {
-        try {
-            //encode post params
-            let formBody = [];
-            for (let property in postParams) {
-              const encodedKey = encodeURIComponent(property);
-              const encodedValue = encodeURIComponent(postParams[property]);
-              formBody.push(encodedKey + "=" + encodedValue);
-            }
-            formBody = formBody.join("&");
-
-            const config = {
-                method: 'POST',
-                headers: {
-                    //'Accept': 'application/json',
-                    //'Content-Type': 'application/json',
-                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-                },
-                //body: JSON.stringify(postParams)
-                body: formBody
-            }
-
-            const response = await fetch(url, config);
-
-            //if error
-            if (response.status >= 400) {
-
-                let errorMessage = this.postError(response.status);
-
-                callback({}, response.status, errorMessage);
-                return;
-            }
-
-            const json = await response.json();
-
-            callback(json, 200, "");
+            callback(json, response.status, "");
         }
         catch (error) {
 
@@ -290,7 +318,7 @@ class Shared {
             //if error
             if (response.status >= 400) {
 
-                let errorMessage = this.postError(response.status);
+                let errorMessage = this.responseError(response.status);
 
                 callback({}, response.status, errorMessage);
                 return;
@@ -306,7 +334,7 @@ class Shared {
         }
     }
 
-    postError(responseStatus) {
+    responseError(responseStatus) {
 
         switch (responseStatus) {
             case 401: return "Unauthorized Error";
@@ -356,8 +384,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if(typeof managerService !== "undefined") {
         
-        managerService.fillManageTicketTable();
-
         shared.fillStatusSelect("filter_status_select");
     }
 });

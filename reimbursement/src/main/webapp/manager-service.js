@@ -1,124 +1,123 @@
 class ManagerService {
 
+    constructor() {
+        this.lastUsername = "";
+        let ticketRowTotal = 0;
+    }
+
     fillManageTicketTable() {
 
-        //todo: get from server
+        //if same user (we already have tickets)
+        if(this.lastUsername === shared.user.username) {
+            return;
+        }
+        this.lastUsername = shared.user.username;
 
-        //pretend this is the JSON response
-        const response = [
-            {
-                id: "1",
-                amount: 200.00,
-                submitted: "Today",
-                resolved: "",
-                description: "Plane ticket.",
-                authorId: 4,
-                resolverId: 0,
-                statusId: 1,
-                typeId: 2
-            },
-            {
-                id: "2",
-                amount: 150.00,
-                submitted: "Yesterday",
-                resolved: "12:50 PM",
-                description: "Company picnic.",
-                authorId: 5,
-                resolverId: 2,
-                statusId: 3,
-                typeId: 3
+        //clear table
+        const ticketBody = document.getElementById("manage_ticket_body");
+        ticketBody.innerHTML = "";
+        this.ticketRowTotal = 0;
+
+        //get user tickets
+        shared.getRequest( {}, "http://localhost:8080/reimbursement/get-all-reimb", (json, statusCode, errorMessage)=> {
+
+            if(!errorMessage) {
+
+                this.tickets = json;
+
+                for (let ticket of this.tickets) {
+
+                    this.addRowToTicketTable(ticket);
+                }
             }
-        ];
+        });
+    }
+
+    addRowToTicketTable(ticket) {
 
         const body = document.getElementById("manage_ticket_body");
-        let i = 0;
-        for (let ticket of response) {
 
-            let tr = document.createElement("tr");
-            body.appendChild(tr);
+        let tr = document.createElement("tr");
+        body.appendChild(tr);
 
-            tr.classList.add("clickable_tr");
-            tr.setAttribute("data-toggle", "collapse");
-            tr.setAttribute("data-target", "#collaspe_div" + i);   
+        tr.classList.add("clickable_tr");
+        tr.setAttribute("data-toggle", "collapse");
+        tr.setAttribute("data-target", "#collaspe_div" + this.ticketRowTotal);   
 
-            shared.setTableCell(tr, ticket.id);
-            shared.setTableCell(tr, ticket.submitted);
-            shared.setTableCell(tr, ticket.authorId);
-            shared.setTableCell(tr, TYPES[ticket.typeId]);
-            shared.setTableCell(tr, ticket.amount);
-            shared.setTableCell(tr, STATUSES[ticket.statusId]);
-            shared.setTableCell(tr, ticket.resolved);
-            shared.setTableCell(tr, ticket.resolverId);
+        shared.setTableCell(tr, ticket.id);
+        shared.setTableCell(tr, ticket.submittedString);
+        shared.setTableCell(tr, ticket.authorString);
+        shared.setTableCell(tr, TYPES[ticket.typeId]);
+        shared.setTableCell(tr, shared.formatCurrency(ticket.amount));
+        shared.setTableCell(tr, STATUSES[ticket.statusId]);
+        shared.setTableCell(tr, ticket.resolvedString);
+        shared.setTableCell(tr, ticket.resolverString);
 
-            tr = document.createElement("tr");
-            body.appendChild(tr);
+        tr = document.createElement("tr");
+        body.appendChild(tr);
 
-            const td = document.createElement("td");
-            tr.appendChild(td);
-            td.setAttribute("colspan", "8");
-            td.style.width = "100%";
+        const td = document.createElement("td");
+        tr.appendChild(td);
+        td.setAttribute("colspan", "8");
+        td.style.width = "100%";
 
-            //collapsable div
-            const div = document.createElement("div");
-            td.appendChild(div);       
-            div.id = "collaspe_div" + i;
-            div.classList.add("collapse");
+        //collapsable div
+        const div = document.createElement("div");
+        td.appendChild(div);       
+        div.id = "collaspe_div" + this.ticketRowTotal;
+        div.classList.add("collapse");
 
-            //Description heading
-            const h4 = document.createElement("h4");
-            div.appendChild(h4);
-            h4.innerText = "Description:";
+        //Description heading
+        const h4 = document.createElement("h4");
+        div.appendChild(h4);
+        h4.innerText = "Description:";
 
-            //Description text
-            const p = document.createElement("p");
-            div.appendChild(p);
-            p.innerText = ticket.description;
+        //Description text
+        const p = document.createElement("p");
+        div.appendChild(p);
+        p.innerText = ticket.description;
 
-            const receiptImg = document.createElement("img");
-            div.appendChild(receiptImg);
-            receiptImg.setAttribute("src", "https://my-project-1-bucket.s3.amazonaws.com/1");
-            receiptImg.setAttribute("alt", "attachment");
-            
-            if(ticket.statusId === 1){
-            tr = document.createElement("tr");
-            body.appendChild(tr);
+        const receiptImg = document.createElement("img");
+        div.appendChild(receiptImg);
+        receiptImg.setAttribute("src", "https://my-project-1-bucket.s3.amazonaws.com/1");
+        receiptImg.setAttribute("alt", "attachment");
+        
+        if(ticket.statusId === STATUS_PENDING){
 
-            const td2 = document.createElement("div")
-            tr.appendChild(td2);
-            td2.setAttribute("colspan", "2");
-            td2.style.width = "100%";
+            const outer = document.createElement("div");
+            outer.className = "text-center";
+            div.appendChild(outer);
 
-            const div2 = document.createElement("div");
-            div2.className = "btn-group w-150"
-            body.appendChild(div2);
+            const inner = document.createElement("div");
+            inner.className = "btn-group";
+            outer.appendChild(inner);
             
             const approve = document.createElement("input");
             approve.type = "button";
-            approve.className = "btn btn-primary .revature_orange w-100";
+            approve.className = "btn btn-primary revature_orange";
             approve.value = "Approve";
-            div2.appendChild(approve);
+            inner.appendChild(approve);
 
             const deny = document.createElement("input");
             deny.type = "button";
-            deny.className = "btn btn-primary .revature_orange w-100";
+            deny.className = "btn btn-primary revature_orange";
             deny.value = "Deny";
-            div2.appendChild(deny);
-            }
-
-           // when image loads
-            receiptImg.addEventListener("load", function() { //arrow function "this" is wrong context. we want the element
-
-                //resize it to 20% of the width of the window
-                const origWidth = this.width;
-                const newWidth = window.innerWidth * .2;
-                const percent = newWidth / origWidth;
-                
-                this.width *= percent;
-                this.height *= percent;
-            });
-
-            i++;
+            inner.appendChild(deny);
         }
+
+       // when image loads
+        receiptImg.addEventListener("load", function() { //arrow function "this" is wrong context. we want the element
+
+            //resize it to 20% of the width of the window
+            const origWidth = this.width;
+            const newWidth = window.innerWidth * .2;
+            const percent = newWidth / origWidth;
+            
+            this.width *= percent;
+            this.height *= percent;
+        });
+
+        this.ticketRowTotal++;
     }
 
     showSection() {
@@ -135,6 +134,8 @@ class ManagerService {
         shared.setNavBar(NAV_MY_TICKETS, false, false);
         shared.setNavBar(NAV_MANAGE_TICKETS, true, true);
         shared.setNavBar(NAV_LOG_OUT, false, false);
+
+        this.fillManageTicketTable();
     }
 }
 const managerService = new ManagerService();
