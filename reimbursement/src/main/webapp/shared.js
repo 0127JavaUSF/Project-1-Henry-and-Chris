@@ -383,7 +383,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if(typeof managerService !== "undefined") {
-        
+   
+        //add options to select
         shared.fillStatusSelect("filter_status_select");
+
+        //add event listener to select
+        managerService.addFilterListener();
     }
 });

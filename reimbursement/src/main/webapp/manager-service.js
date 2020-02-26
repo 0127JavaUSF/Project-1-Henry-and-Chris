@@ -2,21 +2,43 @@ class ManagerService {
 
     constructor() {
         this.lastUsername = "";
-        let ticketRowTotal = 0;
+        this.ticketRowTotal = 0;
+        this.tickets = [];
     }
 
-    fillManageTicketTable() {
+    addFilterListener() {
+
+        const filter = document.getElementById("filter_status_select");
+        filter.addEventListener('change', function() {
+        	
+        	//"none" filter
+        	if(this.value == 0) {
+        		
+                managerService.fillManageTicketTable(managerService.tickets, false);
+                return;
+        	}
+
+            //sort by status
+            let sorted = [];
+            for(let ticket of managerService.tickets) { //need to use managerService not "this" (which is filter)
+
+                //this.value is select status
+                if(ticket.statusId == this.value) { //value is a string so == is necessary NOT ===
+                    sorted.push(ticket);
+                }
+            }
+
+            managerService.fillManageTicketTable(sorted, false);
+        });
+    }
+
+    getAllTicketsRequest() {
 
         //if same user (we already have tickets)
         if(this.lastUsername === shared.user.username) {
             return;
         }
         this.lastUsername = shared.user.username;
-
-        //clear table
-        const ticketBody = document.getElementById("manage_ticket_body");
-        ticketBody.innerHTML = "";
-        this.ticketRowTotal = 0;
 
         //get user tickets
         shared.getRequest( {}, "http://localhost:8080/reimbursement/get-all-reimb", (json, statusCode, errorMessage)=> {
@@ -25,12 +47,27 @@ class ManagerService {
 
                 this.tickets = json;
 
-                for (let ticket of this.tickets) {
-
-                    this.addRowToTicketTable(ticket);
-                }
+                this.fillManageTicketTable(this.tickets);
             }
-        });
+        });        
+    }
+
+    fillManageTicketTable(tickets, clearStatusSelect = true) {
+
+        if(clearStatusSelect) {
+            //clear type select (filter)
+            document.getElementById("filter_status_select").value = 0;
+        }
+
+        //clear table
+        const ticketBody = document.getElementById("manage_ticket_body");
+        ticketBody.innerHTML = "";
+        this.ticketRowTotal = 0;
+
+        for (let ticket of tickets) {
+
+            this.addRowToTicketTable(ticket);
+        }
     }
 
     addRowToTicketTable(ticket) {
@@ -135,7 +172,7 @@ class ManagerService {
         shared.setNavBar(NAV_MANAGE_TICKETS, true, true);
         shared.setNavBar(NAV_LOG_OUT, false, false);
 
-        this.fillManageTicketTable();
+        this.getAllTicketsRequest();
     }
 }
 const managerService = new ManagerService();
