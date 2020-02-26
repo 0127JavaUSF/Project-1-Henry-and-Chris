@@ -99,8 +99,10 @@ public class ReimbursementDAO implements IReimbursementDAO
             if (connection == null) {
                 throw new ConnectionException();
             }
-            
-            String sql = "SELECT * FROM ers_reimbursement;";
+
+            //get all reimbursements with the author name and resolver name
+            //this adds 2 extra columns to the result set (author and resolver) and pulls the names from ers_users
+            String sql = "SELECT r.*, concat(u1.user_first_name, ' ', u1.user_last_name) AS author, concat(u2.user_first_name, ' ', u2.user_last_name) AS resolver FROM ers_reimbursement AS r LEFT JOIN ers_users AS u1 ON r.reimb_author = u1.ers_user_id LEFT JOIN ers_users AS u2 ON r.reimb_resolver = u2.ers_user_id;";
             
             PreparedStatement prepared = connection.prepareStatement(sql);
             ResultSet result = prepared.executeQuery();
@@ -111,8 +113,8 @@ public class ReimbursementDAO implements IReimbursementDAO
                 Reimbursement reimburse = new Reimbursement();
                 setReimbursementFromResultSet(reimburse, result);
                 
-                //reimburse.setAuthorString();
-                //reimburse.setResolverString();
+                reimburse.setAuthorString(result.getString("author"));
+                reimburse.setResolverString(result.getString("resolver"));
                 
                 //do not send primary keys to client
                 reimburse.setAuthorId(0);
