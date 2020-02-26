@@ -36,6 +36,10 @@ class LoginService {
 
 				shared.user = json;
 
+				//set username in nav bar
+				const userA = document.getElementById("user_a");
+				userA.innerText = shared.user.username;
+
 				if(shared.user.roleId == ROLE_EMPLOYEE) {
 
 					employeeService.showSection();
@@ -68,6 +72,10 @@ class LoginService {
 
 	showSection() {
 
+		//set username in nav bar
+		const userA = document.getElementById("user_a");
+		userA.innerText = "";
+		
         //close other sections
         shared.closeSections();
 
