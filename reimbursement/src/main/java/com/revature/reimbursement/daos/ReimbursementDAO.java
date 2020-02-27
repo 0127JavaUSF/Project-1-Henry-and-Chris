@@ -3,12 +3,6 @@ package com.revature.reimbursement.daos;
 import com.revature.reimbursement.exceptions.InvalidReimbursementException;
 import com.revature.reimbursement.exceptions.InvalidUserException;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.ResultSet;
@@ -18,14 +12,10 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import com.revature.reimbursement.exceptions.ConnectionException;
 import com.amazonaws.HttpMethod;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.util.IOUtils;
 import com.revature.reimbursement.ConnectionUtil;
 import com.revature.reimbursement.Reimbursement;
 import java.util.List;
@@ -138,7 +128,7 @@ public class ReimbursementDAO implements IReimbursementDAO
                 // creates s3 object
                 new BasicAWSCredentials(System.getenv("AWS_ACCESS_KEY_ID"),System.getenv("AWS_SECRET_ACCESS_KEY"));
                 final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
-                
+                                
                 java.util.Date expiration = new java.util.Date();
                 long expTimeMillis = expiration.getTime();
                 expTimeMillis += 15000;
@@ -162,6 +152,7 @@ public class ReimbursementDAO implements IReimbursementDAO
                 prepared2.setInt(2, id);
                 
                 int result2 = prepared2.executeUpdate();
+                
                 if (result2 == 1)
                 {
                 	connection.commit();
