@@ -12,13 +12,9 @@ class EmployeeService {
         const amount = document.getElementById("amount_text");
         amount.addEventListener('blur', () => {
 
-            //if not a number (invalid input)
-            const amountFloat = Number.parseFloat(amount.value);
-            if (Number.isNaN(amountFloat)) {
-                amount.value = 0; //change to 0
-            }
+            const amountFloat = this.getNewTicketAmount();
 
-            const amountInDollars = shared.formatCurrency(amount.value);
+            const amountInDollars = shared.formatCurrency(amountFloat);
 
             amount.value = amountInDollars;
 
@@ -257,10 +253,13 @@ class EmployeeService {
 
     getNewTicketAmount() {
         const amount = document.getElementById("amount_text");
-        const amountRequired = document.getElementById("amount_required");
 
-        const noDollarSign = amount.value.replace('$', ''); //remove dollar sign
+        const noDollarSign = amount.value.replace('$', '').replace(/,/g, ''); //remove dollar sign
         const amountNumber = Number.parseFloat(noDollarSign);
+
+        if (Number.isNaN(amountNumber)) {
+            return 0;
+        }
 
         return amountNumber;
     }
