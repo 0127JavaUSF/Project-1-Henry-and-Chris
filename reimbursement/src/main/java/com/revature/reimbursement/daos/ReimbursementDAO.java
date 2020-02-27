@@ -138,7 +138,7 @@ public class ReimbursementDAO implements IReimbursementDAO
                 // creates s3 object
                 new BasicAWSCredentials(System.getenv("AWS_ACCESS_KEY_ID"),System.getenv("AWS_SECRET_ACCESS_KEY"));
                 final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
-                
+                                
                 java.util.Date expiration = new java.util.Date();
                 long expTimeMillis = expiration.getTime();
                 expTimeMillis += 15000;
@@ -146,22 +146,23 @@ public class ReimbursementDAO implements IReimbursementDAO
                 //expires after 10 seconds
                 
                 //generates url for upload
-        		URL url = s3.generatePresignedUrl(bucketName, Integer.toString(id), expiration, HttpMethod.PUT);
+        		URL presignedURL = s3.generatePresignedUrl(bucketName, Integer.toString(id), expiration, HttpMethod.PUT);
         		
         		//link to the image to store in database
-                String presignedURL = "https://my-project-1-bucket.s3.amazonaws.com/" + id;
+                String url = "https://my-project-1-bucket.s3.amazonaws.com/" + id;
                 	
-                reimburse.setPresignedURL(presignedURL);
+                reimburse.setPresignedURL(presignedURL.toString());
                
                 String sql2 = "UPDATE ers_reimbursement "
                 		+ "SET reimb_reciept = ? "
                 		+ "WHERE reimb_id = ?;";
                 
                 PreparedStatement prepared2 = connection.prepareStatement(sql2);
-                prepared2.setString(1, url.toString());
+                prepared2.setString(1, url);
                 prepared2.setInt(2, id);
                 
                 int result2 = prepared2.executeUpdate();
+                
                 if (result2 == 1)
                 {
                 	connection.commit();
