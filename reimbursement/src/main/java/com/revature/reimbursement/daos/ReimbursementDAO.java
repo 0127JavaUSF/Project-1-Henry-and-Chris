@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import com.revature.reimbursement.exceptions.ConnectionException;
+import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
@@ -126,52 +127,55 @@ public class ReimbursementDAO implements IReimbursementDAO
                 Reimbursement reimburse = new Reimbursement();
                 setReimbursementFromResultSet(reimburse, result);
                 
-                if(hasReceipt) {
-                	
-                	int id = reimburse.getId();
-                	
-                	//get presigned url from AWS
-                	String presignedURL = "";
-                	
-                	reimburse.setPresignedURL(presignedURL);
-                }
-                
-//                if(receiptFile == null)
-//                {
+                if(!hasReceipt)
+                {
                     connection.commit();
                     return reimburse;
-//                }
-//                
-//                int id = reimburse.getId();
-//                String bucketName = System.getenv("AWS_BUCKET_NAME");
-//                // creates s3 object
-//                final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
-//                s3.putObject(bucketName, Integer.toString(id) , receiptFile);
-//                URL recieptUrl = s3.getUrl(bucketName, Integer.toString(id));
-//                
-//                String sql2 = "UPDATE ers_reimbursement "
-//                		+ "SET reimb_reciept = ? "
-//                		+ "WHERE reimb_id = ?;";
-//                
-//                PreparedStatement prepared2 = connection.prepareStatement(sql2);
-//                prepared2.setString(1, recieptUrl.toString());
-//                prepared2.setInt(2, id);
-//                
-//                int result2 = prepared2.executeUpdate();
-//                if (result2 == 1)
-//                {
-//                	connection.commit();
-//                	//sets the url for the reimburse object to retrieve the image
-//                	reimburse.setReceipt(recieptUrl.toString());
-//                	
-//                	return reimburse;
-//                }
-//                else {
-//                	if(connection != null) {
-//                		connection.rollback();
-//                	}
-//                    throw new SQLException();
-//                }
+                }
+                
+                int id = reimburse.getId();
+                String bucketName = System.getenv("AWS_BUCKET_NAME");
+                // creates s3 object
+                new BasicAWSCredentials(System.getenv("AWS_ACCESS_KEY_ID"),System.getenv("AWS_SECRET_ACCESS_KEY"));
+                final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
+                
+                java.util.Date expiration = new java.util.Date();
+                long expTimeMillis = expiration.getTime();
+                expTimeMillis += 15000;
+                expiration.setTime(expTimeMillis);
+                //expires after 10 seconds
+                
+                //generates url for upload
+        		URL url = s3.generatePresignedUrl(bucketName, Integer.toString(id), expiration, HttpMethod.PUT);
+        		
+        		//link to the image to store in database
+                String presignedURL = "https://my-project-1-bucket.s3.amazonaws.com/" + id;
+                	
+                reimburse.setPresignedURL(presignedURL);
+               
+                String sql2 = "UPDATE ers_reimbursement "
+                		+ "SET reimb_reciept = ? "
+                		+ "WHERE reimb_id = ?;";
+                
+                PreparedStatement prepared2 = connection.prepareStatement(sql2);
+                prepared2.setString(1, url.toString());
+                prepared2.setInt(2, id);
+                
+                int result2 = prepared2.executeUpdate();
+                if (result2 == 1)
+                {
+                	connection.commit();
+                	//sets the url for the reimburse object to retrieve the image
+                	reimburse.setReceipt(url.toString());
+                	
+                	return reimburse;
+                }
+                else {
+                	if(connection != null) {
+                		connection.rollback();
+                	}
+                    throw new SQLException();
+                }
             }
             
             throw new InvalidUserException();
