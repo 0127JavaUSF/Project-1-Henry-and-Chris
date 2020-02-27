@@ -26,6 +26,7 @@ public class Reimbursement
     private String resolvedString;
     private String description;
     private String receipt;
+    private String presignedURL;
     private int authorId;
     private String authorString;
     private int resolverId;
@@ -208,5 +209,13 @@ public class Reimbursement
 
 	public void setResolverString(String resolverString) {
 		this.resolverString = resolverString;
+	}
+
+	public String getPresignedURL() {
+		return presignedURL;
+	}
+
+	public void setPresignedURL(String presignedURL) {
+		this.presignedURL = presignedURL;
 	}
 }

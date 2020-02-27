@@ -86,27 +86,30 @@ class EmployeeService {
 
                 const typeId_ = document.getElementById("type_select").value;
 
+                const receiptElement = document.getElementById("receipt_file");
+                const files = receiptElement.files;
+                const hasReceipt_ = files.length > 0 ? "true" : ""; //this will be a string in Java
+
                 const params = {
                     amount: this.getNewTicketAmount(),
                     description: document.getElementById("description_textarea").value,
+                    hasReceipt: hasReceipt_,
                     typeId: typeId_
                 };
 
-                const receiptElement = document.getElementById("receipt_file");
-                const files = receiptElement.files;
+                //we are using presigned urls, so we no longer need to upload the receipt
+                // if(files.length > 0) {
+                //     shared.postRequestMultiPart(params, files[0], "http://localhost:8080/reimbursement/insert-multipart", (json, statusCode, errorMessage)=> {
 
-                if(files.length > 0) {
-                    shared.postRequestMultiPart(params, files[0], "http://localhost:8080/reimbursement/insert-multipart", (json, statusCode, errorMessage)=> {
-
-                        this.onSubmitTicket(errorMessage, json);
-                    });
-                }
-                else {
+                //         this.onSubmitTicket(errorMessage, json);
+                //     });
+                // }
+                // else {
                     shared.postRequest(params, "http://localhost:8080/reimbursement/insert", (json, statusCode, errorMessage)=> {
 
                         this.onSubmitTicket(errorMessage, json);
                     });
-                }
+                // }
             }
 
             e.preventDefault();
