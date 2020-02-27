@@ -36,9 +36,7 @@ public class InsertReimbursementMultiPartServlet extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+    //note: this is not used. instead an AWS presigned url is used to upload directly to Amazon
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
         //if not multi part form
@@ -56,12 +54,15 @@ public class InsertReimbursementMultiPartServlet extends HttpServlet {
 		    return;
 	    }
 	        
-	    String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString(); // MSIE fix.
+	    //get file name
+	    String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+	    
+	    //copy to File object
 	    InputStream receipt = filePart.getInputStream();
 	    Files.copy(receipt, Paths.get(fileName), StandardCopyOption.REPLACE_EXISTING);
 	    File file = new File(fileName);
         
-	    //get post parameters
+	    //get post parameters from multi part form
         String amount = "0";
     	String description = "description";
         String typeId = "2";

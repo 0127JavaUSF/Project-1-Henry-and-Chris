@@ -1,6 +1,7 @@
 
 class LoginService {
 
+	//login button event listener
 	addLoginEventListener() {
 
 		const loginButton = document.getElementById("login_button");
@@ -9,13 +10,14 @@ class LoginService {
 			const username = document.getElementById("username_text").value;
 			const password = document.getElementById("password_text").value;
 	
-			this.fetchUser(username, password);
+			this.getUserPostRequest(username, password);
 	
 			e.preventDefault();
 		});
 	}
 
-	async fetchUser(username_, password_) {
+	//get user post request
+	async getUserPostRequest(username_, password_) {
 
 		const postParams = {
 			username: username_,
@@ -25,14 +27,19 @@ class LoginService {
 		shared.postRequest(postParams, "http://localhost:8080/reimbursement/login", (json, statusCode, errorMessage) => {
 
 			const error = document.getElementById("login_error");
+
+			//if error
 			if (errorMessage) {
+				//clear form
 				document.getElementById("username_text").value = "";
 				document.getElementById("password_text").value = "";
+
+				//show error
 				error.innerText = errorMessage;
 				error.classList.remove("hide");
 			}
 			else {
-				error.classList.add("hide");
+				error.classList.add("hide"); //hide error
 
 				shared.user = json;
 
@@ -40,22 +47,27 @@ class LoginService {
 				const userA = document.getElementById("user_a");
 				userA.innerText = shared.user.username;
 
+				//if employee
 				if(shared.user.roleId == ROLE_EMPLOYEE) {
 
+					//show employee section
 					employeeService.showSection();
 
 					//if logged in as employee, do not display "manage tickets" nav bar menu item
 					const manageTicketsNavItem = document.getElementById(NAV_LI[NAV_MANAGE_TICKETS]);
 					manageTicketsNavItem.style.display = "none";
 				}
+				//if manager
 				else if(shared.user.roleId === ROLE_MANAGER) {
 
+					//show manager section
 					managerService.showSection();
 				}
 			}
 		});
 	}
 
+	//get user using XMLHttpRequest (not used)
 	getUserXHR(username_, password_) {
 
 		const xhr = new XMLHttpRequest();
@@ -70,6 +82,7 @@ class LoginService {
 		xhr.send();
 	}
 
+	//show the login section
 	showSection() {
 
 		//set username in nav bar

@@ -6,6 +6,7 @@ class ManagerService {
         this.tickets = [];
     }
 
+    //the "filter by ticket status" select
     addFilterListener() {
 
         const filter = document.getElementById("filter_status_select");
@@ -23,15 +24,17 @@ class ManagerService {
             for(let ticket of managerService.tickets) { //need to use managerService not "this" (which is filter)
 
                 //this.value is select status
-                if(ticket.statusId == this.value) { //value is a string so == is necessary NOT ===
+                if(ticket.statusId == this.value) { //value is a string so use == not ===
                     sorted.push(ticket);
                 }
             }
 
+            //update manager ticket table
             managerService.fillManageTicketTable(sorted, false);
         });
     }
 
+    //do post request to get all tickets
     getAllTicketsRequest() {
 
         //if same user (we already have tickets)
@@ -52,6 +55,7 @@ class ManagerService {
         });        
     }
 
+    //fill the manage tickets table
     fillManageTicketTable(tickets, clearStatusSelect = true) {
 
         if(clearStatusSelect) {
@@ -70,10 +74,12 @@ class ManagerService {
         }
     }
 
+    //add row to the manage ticket table
     addRowToTicketTable(ticket, rowIndex = -1, tableRowElement = null, collapsedTableRowElement = null) {
 
         const body = document.getElementById("manage_ticket_body");
 
+        //if default parameter not set
         if(rowIndex < 0) {
             rowIndex = this.ticketRowTotal;
             this.ticketRowTotal++;
@@ -93,6 +99,7 @@ class ManagerService {
             tr.setAttribute("data-target", "#collaspe_div" + rowIndex);   
         }
 
+        //set row
         shared.setTableCell(tr, ticket.id);
         shared.setTableCell(tr, ticket.submittedString);
         shared.setTableCell(tr, ticket.authorString);
@@ -102,6 +109,7 @@ class ManagerService {
         shared.setTableCell(tr, ticket.resolvedString);
         shared.setTableCell(tr, ticket.resolverString);
 
+        //if collapsable row passed to function
         if(collapsedTableRowElement) {
             tr = collapsedTableRowElement;
         }
@@ -122,12 +130,12 @@ class ManagerService {
         div.id = "collaspe_div" + rowIndex;
         div.classList.add("collapse");
 
-        //Description heading
+        //description heading
         const h4 = document.createElement("h4");
         div.appendChild(h4);
         h4.innerText = "Description:";
 
-        //Description text
+        //description text
         const p = document.createElement("p");
         div.appendChild(p);
         p.innerText = ticket.description;
@@ -141,14 +149,16 @@ class ManagerService {
         receiptImg.setAttribute("src", "https://my-project-1-bucket.s3.amazonaws.com/1");
         receiptImg.setAttribute("alt", "attachment");
         
+        //if ticket status is PENDING
         if(ticket.statusId === STATUS_PENDING){
 
             const outer = document.createElement("div");
             outer.className = "text-center";
             div.appendChild(outer);
 
+            //approve / deny post request error
             const error = document.createElement("div");
-            error.className = "error my-2";
+            error.className = "error my-2 hide";
             error.id = "resolve_reimb_error" + rowIndex;
             error.innerText = "error placeholder"
             outer.appendChild(error);
@@ -157,6 +167,7 @@ class ManagerService {
             inner.className = "btn-group w-50 my-2";
             outer.appendChild(inner);
             
+            //approve button
             const approve = document.createElement("input");
             approve.type = "button";
             approve.className = "btn btn-success";
@@ -169,6 +180,7 @@ class ManagerService {
             approve.dataset.rowIndex = rowIndex;
             approve.dataset.statusId = STATUS_APPROVED;
 
+            //deny button
             const deny = document.createElement("input");
             deny.type = "button";
             deny.className = "btn btn-danger";
@@ -213,10 +225,12 @@ class ManagerService {
         
         shared.postRequest(postParams, "http://localhost:8080/reimbursement/resolve-reimb", function(updatedTicket, statusCode, errorMessage) {
 
+            //if post error
             if (errorMessage) {
                 const error = document.getElementById(this.dataset.errorId);
                 error.innerText = errorMessage;
 
+                //show error message
                 shared.removeClass(this.dataset.errorId, "hide");
             }
             else {
@@ -227,6 +241,8 @@ class ManagerService {
         }.bind(button)); //this is button
     }
 
+    //on approve or deny post request callback
+    //updated ticket is set by the server
     onApproveDeny(button, updatedTicket) {
 
         const rowI = button.dataset.rowIndex;
@@ -246,15 +262,17 @@ class ManagerService {
         managerService.addRowToTicketTable(updatedTicket, rowI, row, subrow);
     }
 
+    //show the manager section
     showSection() {
 
+        //close other section
         shared.closeSections();
 
+        //show this section
         const managerSection = document.getElementById("manager_section");
         managerSection.style.display = "block";
 
         //update nav bar
-
         shared.setManageNavBarDisplay();
 
         shared.setNavBar(NAV_MY_TICKETS, false, false);
