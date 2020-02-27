@@ -2,51 +2,60 @@
 class EmployeeService {
 
     constructor() {
-        this.lastUsername = "";
-        this.tickets = [];
+        this.lastUsername = ""; //the last username that was logged in
+        this.tickets = []; //used by open tickets table
         this.ticketRowTotal = 0;
     }
 
+    //new ticket "amount" text input
     addAmountListener() {
 
         const amount = document.getElementById("amount_text");
         amount.addEventListener('blur', () => {
 
+            //convert to float
             const amountFloat = this.getNewTicketAmount();
 
+            //format in US dollars
             const amountInDollars = shared.formatCurrency(amountFloat);
 
             amount.value = amountInDollars;
 
+            //show "required" message if amount is 0
             this.validateAmount();
         });
     }
 
+    //"clear receipt" button used when attaching receipt to new ticket
     addClearReceiptListener() {
 
         const button = document.getElementById("clear_receipt_button");
         button.addEventListener('click', () => {
 
-            //clear selected receipt file
+            //remove receipt
             const filePicker = document.getElementById("receipt_file");
             filePicker.value = "";
         });
     }
 
+    //new ticket "type" select
     addTypeListener() {
 
         const type = document.getElementById("type_select");
         type.addEventListener('change', () => {
 
+            //show "required" message if "none" selected
             this.validateType();
         });
     }
 
+    //new ticket "description" text area
     addDescriptionListener() {
 
         const description = document.getElementById("description_textarea");
         description.addEventListener('blur', () => {
 
+            //show "required" if empty
             this.validateDescription();
         });
     }
