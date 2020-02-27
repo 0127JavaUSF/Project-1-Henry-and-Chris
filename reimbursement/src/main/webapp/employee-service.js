@@ -2,55 +2,60 @@
 class EmployeeService {
 
     constructor() {
-        this.lastUsername = "";
-        this.tickets = [];
+        this.lastUsername = ""; //the last username that was logged in
+        this.tickets = []; //used by open tickets table
         this.ticketRowTotal = 0;
     }
 
+    //new ticket "amount" text input
     addAmountListener() {
 
         const amount = document.getElementById("amount_text");
         amount.addEventListener('blur', () => {
 
-            //if not a number (invalid input)
-            const amountFloat = Number.parseFloat(amount.value);
-            if (Number.isNaN(amountFloat)) {
-                amount.value = 0; //change to 0
-            }
+            //convert to float
+            const amountFloat = this.getNewTicketAmount();
 
-            const amountInDollars = shared.formatCurrency(amount.value);
+            //format in US dollars
+            const amountInDollars = shared.formatCurrency(amountFloat);
 
             amount.value = amountInDollars;
 
+            //show "required" message if amount is 0
             this.validateAmount();
         });
     }
 
+    //"clear receipt" button used when attaching receipt to new ticket
     addClearReceiptListener() {
 
         const button = document.getElementById("clear_receipt_button");
         button.addEventListener('click', () => {
 
-            //clear selected receipt file
+            //remove receipt
             const filePicker = document.getElementById("receipt_file");
             filePicker.value = "";
         });
     }
 
+    //new ticket "type" select
     addTypeListener() {
 
         const type = document.getElementById("type_select");
         type.addEventListener('change', () => {
 
+            //show "required" message if "none" selected
             this.validateType();
         });
     }
 
+    //new ticket "description" text area
     addDescriptionListener() {
 
         const description = document.getElementById("description_textarea");
         description.addEventListener('blur', () => {
 
+            //show "required" if empty
             this.validateDescription();
         });
     }
@@ -108,7 +113,7 @@ class EmployeeService {
                     shared.postRequest(params, "http://localhost:8080/reimbursement/insert", (json, statusCode, errorMessage)=> {
 
                         this.onSubmitTicket(errorMessage, json);
-                    });
+                    }, 'PUT');
                 // }
             }
 
@@ -257,10 +262,13 @@ class EmployeeService {
 
     getNewTicketAmount() {
         const amount = document.getElementById("amount_text");
-        const amountRequired = document.getElementById("amount_required");
 
-        const noDollarSign = amount.value.replace('$', ''); //remove dollar sign
+        const noDollarSign = amount.value.replace('$', '').replace(/,/g, ''); //remove dollar sign
         const amountNumber = Number.parseFloat(noDollarSign);
+
+        if (Number.isNaN(amountNumber)) {
+            return 0;
+        }
 
         return amountNumber;
     }

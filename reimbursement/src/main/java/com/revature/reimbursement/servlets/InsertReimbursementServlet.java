@@ -54,7 +54,7 @@ public class InsertReimbursementServlet extends HttpServlet {
 	}
 
 	//this servlet is called by the client if no receipt is uploaded
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
         //get post parameters
         String amount = request.getParameter("amount");
