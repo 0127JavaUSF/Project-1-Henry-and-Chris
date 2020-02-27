@@ -218,7 +218,7 @@ class Shared {
     }
 
     //postParams should be an object literal
-    async postRequest(postParams, url, callback) {
+    async postRequest(postParams, url, callback, methodType = 'POST') {
         try {
             //encode post params
             let formBody = [];
@@ -230,7 +230,7 @@ class Shared {
             formBody = formBody.join("&");
 
             const config = {
-                method: 'POST',
+                method: methodType,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
                 },

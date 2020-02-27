@@ -113,7 +113,7 @@ class EmployeeService {
                     shared.postRequest(params, "http://localhost:8080/reimbursement/insert", (json, statusCode, errorMessage)=> {
 
                         this.onSubmitTicket(errorMessage, json);
-                    });
+                    }, 'PUT');
                 // }
             }
 
