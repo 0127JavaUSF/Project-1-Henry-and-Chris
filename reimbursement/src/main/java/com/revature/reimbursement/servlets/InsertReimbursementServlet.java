@@ -46,20 +46,15 @@ public class InsertReimbursementServlet extends HttpServlet {
 		resp.addHeader("Access-Control-Allow-Methods", "GET POST PUT DELETE");
 		resp.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
 		
-		//test
-//		LoginServlet.LoginTest(req); //login for testing purposes
-//		doPost(req, resp);
-		
 		super.service(req, resp);
 	}
 
-	//this servlet is called by the client if no receipt is uploaded
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
         //get post parameters
         String amount = request.getParameter("amount");
     	String description = request.getParameter("description");
-    	String hasReceipt = request.getParameter("hasReceipt");
+    	String hasReceipt = request.getParameter("hasReceipt"); //whether the user has a receipt
         String typeId = request.getParameter("typeId");
         
     	boolean hasReceipt_ = (hasReceipt != null && hasReceipt.isEmpty() == false) ? true : false;

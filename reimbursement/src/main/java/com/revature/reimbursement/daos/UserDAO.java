@@ -17,6 +17,7 @@ import com.revature.reimbursement.User;
 
 public class UserDAO implements IUserDAO
 {
+	/** get the user from the user id **/
     @Override
     public User getUser(int userId) throws ConnectionException, InvalidUserException, SQLException {
                 
@@ -45,6 +46,7 @@ public class UserDAO implements IUserDAO
         }
     }
     
+    /** get the user from the login info **/
     @Override
     public User logIn(String username, String password) throws ConnectionException, InvalidLoginException, SQLException {
         
@@ -81,6 +83,7 @@ public class UserDAO implements IUserDAO
         }
     }
     
+    /** set the User from the ResultSet **/
     private void setUserFromResultSet(User user, ResultSet result) throws SQLException {
         try {
             user.init(result.getInt("ers_user_id"), result.getString("ers_username"), result.getString("user_first_name"), result.getString("user_last_name"), result.getString("user_email"), result.getInt("user_role_id"));
@@ -90,8 +93,10 @@ public class UserDAO implements IUserDAO
         }
     }
     
+    /** hashes the User's password assuming it is in the database unhashed **/
     public void hashDatabasePasswords(int id) throws ConnectionException, SQLException
     {
+    	//create the hasher
     	Hasher hash = BCrypt.withDefaults();
     	try(Connection connection = ConnectionUtil.getConnection()) {
             if (connection == null) {
@@ -104,7 +109,9 @@ public class UserDAO implements IUserDAO
             ResultSet result = prepared.executeQuery();
             if (result.next()) {                
             	char[] password = result.getString("ers_password").toCharArray();
-                String newPass = hash.hashToString(4,password);                
+            	//one way hashing. 4 means 2 to the power 4. function runs 16 times, known as "key stretching". hash value contains original password, salt and hash algorithm
+            	//the "salt" are random bytes. if 2 passwords are identical, the random salt results in different hash values (to prevent rainbow table attacks)
+                String newPass = hash.hashToString(4,password);  
                 String sql2 = "UPDATE ers_users "
                 		+ "set ers_password = ? "
                 		+ "where ers_user_id = ?";

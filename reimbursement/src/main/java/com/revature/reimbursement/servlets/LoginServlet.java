@@ -36,7 +36,6 @@ public class LoginServlet extends HttpServlet
 		}
 	}
 	
-	
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 				
@@ -55,6 +54,7 @@ public class LoginServlet extends HttpServlet
 //    	ObjectMapper om = new ObjectMapper();
 //    	om.readValue(request.getReader(), User.class);		
 	    	   	
+		//use post parameters
     	String username = request.getParameter("username");
         String password = request.getParameter("password");
         

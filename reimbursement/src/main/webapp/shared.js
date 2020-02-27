@@ -23,6 +23,7 @@ const TYPE_FOOD = 3;
 const TYPE_OTHER = 4;
 const TYPES = ["", "Lodging", "Travel", "Food", "Other"];
 
+//shared singleton class
 class Shared {
 
     constructor() {
@@ -33,6 +34,7 @@ class Shared {
         this.user = null;
     }
 
+    //add css class shortcut method
     addClass(elementId, className) {
         const element = document.getElementById(elementId);
         if(element.classList.contains(className) === false) {
@@ -40,37 +42,46 @@ class Shared {
         }
     }
 
+    //remove css class shortcut method
     removeClass(elementId, className) {
         document.getElementById(elementId).classList.remove(className);
     }
 
+    //navigation bar click listeners
     addNavBarClickListeners() {
 
+        //if "My Tickets" clicked
         const myTickets = document.getElementById(NAV_A[NAV_MY_TICKETS]);
         myTickets.addEventListener("click", (e)=> {
 
+            //show employee section
             employeeService.showSection();
 
             e.preventDefault();
         });
 
+        //if "Manage Tickets" clicked
         const manageTickets = document.getElementById(NAV_A[NAV_MANAGE_TICKETS]);
         manageTickets.addEventListener("click", (e)=> {
 
+            //show manager section
             managerService.showSection();
 
             e.preventDefault();
         });
     
+        //if "Log out" clicked
         const logout = document.getElementById(NAV_A[NAV_LOG_OUT]);
         logout.addEventListener("click", (e)=> {
 
+            //show login section
             loginService.showSection();
 
             e.preventDefault();
         });
     }
 
+    //close all sections
     closeSections() {
 
         const logInSection = document.getElementById("login_section");
@@ -86,6 +97,7 @@ class Shared {
         managerSection.style.display = "none";
     }
 
+    //disable all menu items on the nav bar
     disableNavBar() {
 
         //for all nav bar menu items
@@ -99,6 +111,7 @@ class Shared {
         }
     }
 
+    //show or not show the "Manage Tickets" menu item in the nav bar
     setManageNavBarDisplay() {
 
         const manageTickets = document.getElementById(NAV_LI[NAV_MANAGE_TICKETS]);
@@ -112,6 +125,7 @@ class Shared {
         }
     }
 
+    //sets one menu item in the nav bar
     setNavBar(navIndex, isActive, isDisabled) {
 
         const menuItemLI = document.getElementById(NAV_LI[navIndex]);
@@ -134,6 +148,7 @@ class Shared {
         }
     }
 
+    //fill the status input select with options
     fillStatusSelect(tagId) {
 
         const select = document.getElementById(tagId);
@@ -154,6 +169,7 @@ class Shared {
         }
     }
 
+    //fill the type input select with options
     fillTypeSelect(tagId) {
 
         const select = document.getElementById(tagId);
@@ -186,6 +202,7 @@ class Shared {
         return formatter.format(amount);
     }
 
+    //make a get request
     async getRequest(getParams, url, callback) {
 
         //todo: concat getParams to end of url
@@ -258,8 +275,9 @@ class Shared {
         }
     }
 
-        //postParams should be an object literal
+    //postParams should be an object literal
     //this works with file upload (such as receipt)
+    //note: not used because we are uploading to AWS using a presigned url, not our server
     async postRequestMultiPart(postParams, file, url, callback) {
         try {
             //append file
@@ -334,6 +352,7 @@ class Shared {
         }
     }
 
+    //convert the response code to an error string
     responseError(responseStatus) {
 
         switch (responseStatus) {
@@ -356,7 +375,11 @@ class Shared {
 }
 const shared = new Shared();
 
+//document object model loaded callback
 document.addEventListener("DOMContentLoaded", function () {
+
+    //add various event listeners
+    //tables are not filled with data until user navigates to that section
 
     shared.addNavBarClickListeners();
 

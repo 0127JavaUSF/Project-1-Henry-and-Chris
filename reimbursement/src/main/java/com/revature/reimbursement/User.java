@@ -65,17 +65,12 @@ public class User
         return this.roleId;
     }
     
+    //get the name of the role
     public String getRoleAsString() {
         switch (this.roleId) {
-            case 1: {
-                return "Employee";
-            }
-            case 2: {
-                return "Finance Manager";
-            }
-            default: {
-                return "Error";
-            }
+	        case 1: return "Employee";
+	        case 2: return "Finance Manager";
+	        default: return "Error";
         }
     }
     
