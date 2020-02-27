@@ -59,12 +59,15 @@ public class InsertReimbursementServlet extends HttpServlet {
         //get post parameters
         String amount = request.getParameter("amount");
     	String description = request.getParameter("description");
+    	String hasReceipt = request.getParameter("hasReceipt");
         String typeId = request.getParameter("typeId");
         
-        insertReimbursementDAO(null, null, amount, description, typeId, request, response);
+    	boolean hasReceipt_ = (hasReceipt != null && hasReceipt.isEmpty() == false) ? true : false;
+
+        insertReimbursementDAO(amount, description, hasReceipt_, typeId, request, response);
 	}
 	
-	public static void insertReimbursementDAO(File receipt, String receiptFileName, String amount, String description, String typeId, HttpServletRequest request, HttpServletResponse response) {
+	public static void insertReimbursementDAO(String amount, String description, boolean hasReceipt, String typeId, HttpServletRequest request, HttpServletResponse response) {
 		
         //get user from session
         HttpSession session = request.getSession();
@@ -77,7 +80,8 @@ public class InsertReimbursementServlet extends HttpServlet {
         
         ReimbursementDAO reimbDAO = new ReimbursementDAO();
         try {
-        	Reimbursement reimb = reimbDAO.insertReimbursement(new BigDecimal(amount), receipt, receiptFileName, description, user.getId(), Integer.parseInt(typeId));
+        	        	
+        	Reimbursement reimb = reimbDAO.insertReimbursement(new BigDecimal(amount), description, hasReceipt, user.getId(), Integer.parseInt(typeId));
                                                 
             response.setStatus(ConnectionUtil.STATUS_SUCCESS);
             response.setContentType("application/json");
@@ -85,7 +89,7 @@ public class InsertReimbursementServlet extends HttpServlet {
             //do not send primary key to client. if possible, primary keys should not be exposed
             int primaryKey = reimb.getAuthorId();
             reimb.setAuthorId(0);
-            
+                        
             //marshalling
         	ObjectMapper om = new ObjectMapper();
         	om.writeValue(response.getWriter(), reimb);        	

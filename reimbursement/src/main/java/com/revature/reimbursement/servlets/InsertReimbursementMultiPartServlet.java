@@ -78,7 +78,7 @@ public class InsertReimbursementMultiPartServlet extends HttpServlet {
         	}
         }
         
-        InsertReimbursementServlet.insertReimbursementDAO(file, fileName, amount, description, typeId, request, response);
+        InsertReimbursementServlet.insertReimbursementDAO(amount, description, true, typeId, request, response);
 	}
 	
 	//returns the post parameter value in the Part
