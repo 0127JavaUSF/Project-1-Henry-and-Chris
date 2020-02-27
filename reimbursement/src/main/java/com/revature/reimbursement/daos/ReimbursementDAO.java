@@ -146,19 +146,19 @@ public class ReimbursementDAO implements IReimbursementDAO
                 //expires after 10 seconds
                 
                 //generates url for upload
-        		URL url = s3.generatePresignedUrl(bucketName, Integer.toString(id), expiration, HttpMethod.PUT);
+        		URL presignedURL = s3.generatePresignedUrl(bucketName, Integer.toString(id), expiration, HttpMethod.PUT);
         		
         		//link to the image to store in database
-                String presignedURL = "https://my-project-1-bucket.s3.amazonaws.com/" + id;
+                String url = "https://my-project-1-bucket.s3.amazonaws.com/" + id;
                 	
-                reimburse.setPresignedURL(presignedURL);
+                reimburse.setPresignedURL(presignedURL.toString());
                
                 String sql2 = "UPDATE ers_reimbursement "
                 		+ "SET reimb_reciept = ? "
                 		+ "WHERE reimb_id = ?;";
                 
                 PreparedStatement prepared2 = connection.prepareStatement(sql2);
-                prepared2.setString(1, url.toString());
+                prepared2.setString(1, url);
                 prepared2.setInt(2, id);
                 
                 int result2 = prepared2.executeUpdate();
@@ -166,7 +166,7 @@ public class ReimbursementDAO implements IReimbursementDAO
                 {
                 	connection.commit();
                 	//sets the url for the reimburse object to retrieve the image
-                	reimburse.setReceipt(url.toString());
+                	reimburse.setReceipt(url);
                 	
                 	return reimburse;
                 }
