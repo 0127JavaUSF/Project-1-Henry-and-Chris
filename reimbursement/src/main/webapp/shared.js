@@ -74,8 +74,12 @@ class Shared {
         const logout = document.getElementById(NAV_A[NAV_LOG_OUT]);
         logout.addEventListener("click", (e)=> {
 
-            //show login section
-            loginService.showSection();
+            //end server session
+            this.getRequest( {}, "http://localhost:8080/reimbursement/logout", (json, statusCode, errorMessage)=> {
+
+                //show login section
+                loginService.showSection();
+            });
 
             e.preventDefault();
         });

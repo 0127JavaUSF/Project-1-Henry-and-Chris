@@ -1,19 +1,19 @@
 package com.revature.reimbursement.daos;
 
-import com.revature.reimbursement.exceptions.InvalidLoginException;
-import java.sql.ResultSet;
-import java.sql.PreparedStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import com.revature.reimbursement.ConnectionUtil;
+import com.revature.reimbursement.User;
+import com.revature.reimbursement.exceptions.ConnectionException;
+import com.revature.reimbursement.exceptions.InvalidLoginException;
 import com.revature.reimbursement.exceptions.InvalidUserException;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import at.favre.lib.crypto.bcrypt.BCrypt.Hasher;
 import at.favre.lib.crypto.bcrypt.BCrypt.Verifyer;
-
-import com.revature.reimbursement.exceptions.ConnectionException;
-import com.revature.reimbursement.ConnectionUtil;
-import com.revature.reimbursement.User;
 
 public class UserDAO implements IUserDAO
 {

@@ -1,16 +1,14 @@
 package com.revature.reimbursement.daos;
 
-import com.revature.reimbursement.exceptions.InvalidReimbursementException;
-import com.revature.reimbursement.exceptions.InvalidUserException;
-
 import java.math.BigDecimal;
 import java.net.URL;
-import java.sql.ResultSet;
-import java.sql.PreparedStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
-import com.revature.reimbursement.exceptions.ConnectionException;
+import java.util.List;
+
 import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
@@ -18,7 +16,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.revature.reimbursement.ConnectionUtil;
 import com.revature.reimbursement.Reimbursement;
-import java.util.List;
+import com.revature.reimbursement.exceptions.ConnectionException;
+import com.revature.reimbursement.exceptions.InvalidReimbursementException;
+import com.revature.reimbursement.exceptions.InvalidUserException;
 
 public class ReimbursementDAO implements IReimbursementDAO
 {

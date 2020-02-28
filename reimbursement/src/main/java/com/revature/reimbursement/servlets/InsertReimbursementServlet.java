@@ -1,8 +1,6 @@
 package com.revature.reimbursement.servlets;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
@@ -12,16 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.reimbursement.ConnectionUtil;
 import com.revature.reimbursement.Reimbursement;
 import com.revature.reimbursement.User;
 import com.revature.reimbursement.daos.ReimbursementDAO;
-import com.revature.reimbursement.daos.UserDAO;
 import com.revature.reimbursement.exceptions.ConnectionException;
-import com.revature.reimbursement.exceptions.InvalidLoginException;
 import com.revature.reimbursement.exceptions.InvalidUserException;
 
 /**
