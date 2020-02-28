@@ -47,44 +47,6 @@ class Shared {
         document.getElementById(elementId).classList.remove(className);
     }
 
-    //navigation bar click listeners
-    addNavBarClickListeners() {
-
-        //if "My Tickets" clicked
-        const myTickets = document.getElementById(NAV_A[NAV_MY_TICKETS]);
-        myTickets.addEventListener("click", (e)=> {
-
-            //show employee section
-            employeeService.showSection();
-
-            e.preventDefault();
-        });
-
-        //if "Manage Tickets" clicked
-        const manageTickets = document.getElementById(NAV_A[NAV_MANAGE_TICKETS]);
-        manageTickets.addEventListener("click", (e)=> {
-
-            //show manager section
-            managerService.showSection();
-
-            e.preventDefault();
-        });
-    
-        //if "Log out" clicked
-        const logout = document.getElementById(NAV_A[NAV_LOG_OUT]);
-        logout.addEventListener("click", (e)=> {
-
-            //end server session
-            this.getRequest( {}, "http://localhost:8080/reimbursement/logout", (json, statusCode, errorMessage)=> {
-
-                //show login section
-                loginService.showSection();
-            });
-
-            e.preventDefault();
-        });
-    }
-
     //close all sections
     closeSections() {
 
@@ -99,57 +61,6 @@ class Shared {
 
         const managerSection = document.getElementById("manager_section");
         managerSection.style.display = "none";
-    }
-
-    //disable all menu items on the nav bar
-    disableNavBar() {
-
-        //for all nav bar menu items
-        for(let i = 0; i < NAV_LI.length; i++) {
-
-            //make not active
-            this.removeClass(NAV_LI[i], "active");
-
-            //make disabled
-            this.addClass(NAV_A[i], "disabled");
-        }
-    }
-
-    //show or not show the "Manage Tickets" menu item in the nav bar
-    setManageNavBarDisplay() {
-
-        const manageTickets = document.getElementById(NAV_LI[NAV_MANAGE_TICKETS]);
-        if(this.user && this.user.roleId === ROLE_MANAGER) {
-
-            manageTickets.style.display = "block";
-        }
-        else {
-            //do not show manage tickets menu item
-            manageTickets.style.display = "none";
-        }
-    }
-
-    //sets one menu item in the nav bar
-    setNavBar(navIndex, isActive, isDisabled) {
-
-        const menuItemLI = document.getElementById(NAV_LI[navIndex]);
-        if(isActive) {
-            //make active
-            this.addClass(NAV_LI[navIndex], "active");
-        }
-        else {
-            this.removeClass(NAV_LI[navIndex], "active");
-        }
-        
-        const menuItemA = document.getElementById(NAV_A[navIndex]);
-        if(isDisabled) {
-            //make disabled
-            this.addClass(NAV_A[navIndex], "disabled");
-        }
-        else {
-            //remove disabled
-            this.removeClass(NAV_A[navIndex], "disabled");
-        }
     }
 
     //fill the status input select with options
@@ -239,7 +150,7 @@ class Shared {
     }
 
     //postParams should be an object literal
-    async postRequest(postParams, url, callback, methodType = 'POST') {
+    async postRequest(postParams, url, callback) {
         try {
             //encode post params
             let formBody = [];
@@ -251,7 +162,7 @@ class Shared {
             formBody = formBody.join("&");
 
             const config = {
-                method: methodType,
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
                 },
@@ -357,23 +268,22 @@ class Shared {
     }
     
     async putRequest(file, contentType, url) {
-        try{
+        try {
             const config = {
                 method: 'PUT',
                 header: {
                     'Content-Type': contentType,
                 },
                 body: file
+            }
+
+            const response = await fetch(url, config);
+            console.log(response.status);
         }
-
-       const response = await fetch(url, config);
-       console.log(response.status);
-
+        catch (error) {
+            console.log(error);
+        }
     }
-    catch (error){
-        console.log(error);
-    }
-}
 
     //convert the response code to an error string
     responseError(responseStatus) {
@@ -404,36 +314,36 @@ document.addEventListener("DOMContentLoaded", function () {
     //add various event listeners
     //tables are not filled with data until user navigates to that section
 
-    shared.addNavBarClickListeners();
+    navBar.addClickListeners();
 
-    if(typeof loginService !== "undefined") {
+    if(typeof loginSection !== "undefined") {
 
-        loginService.addLoginEventListener();
+        loginSection.addLoginEventListener();
     }
 
-    if(typeof employeeService !== "undefined") {
+    if(typeof employeeSection !== "undefined") {
 
-        employeeService.addNewTicketListener();
+        employeeSection.addNewTicketListener();
     
-        employeeService.addAmountListener();
+        employeeSection.addAmountListener();
 
-        employeeService.addTypeListener();
+        employeeSection.addTypeListener();
 
-        employeeService.addDescriptionListener();
+        employeeSection.addDescriptionListener();
     
         shared.fillTypeSelect("type_select");
 
-        employeeService.addClearReceiptListener();
+        employeeSection.addClearReceiptListener();
 
-        employeeService.addSubmitTicketListener();    
+        employeeSection.addSubmitTicketListener();    
     }
 
-    if(typeof managerService !== "undefined") {
+    if(typeof managerSection !== "undefined") {
    
         //add options to select
         shared.fillStatusSelect("filter_status_select");
 
         //add event listener to select
-        managerService.addFilterListener();
+        managerSection.addFilterListener();
     }
 });

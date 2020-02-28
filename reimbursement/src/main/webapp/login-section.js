@@ -1,14 +1,15 @@
 
-class LoginService {
+//note: this file uses JQuery for learning purposes
+
+class LoginSection {
 
 	//login button event listener
 	addLoginEventListener() {
 
-		const loginButton = document.getElementById("login_button");
-		loginButton.addEventListener('click', (e) => {
+		$("#login_button").click((e) => {
 	
-			const username = document.getElementById("username_text").value;
-			const password = document.getElementById("password_text").value;
+			const username = $("#username_text").val();
+			const password = $("#password_text").val();
 	
 			this.getUserPostRequest(username, password);
 	
@@ -26,42 +27,40 @@ class LoginService {
 
 		shared.postRequest(postParams, "http://localhost:8080/reimbursement/login", (json, statusCode, errorMessage) => {
 
-			const error = document.getElementById("login_error");
+			const error = $("#login_error");
 
 			//if error
 			if (errorMessage) {
 				//clear form
-				document.getElementById("username_text").value = "";
-				document.getElementById("password_text").value = "";
+				$("#username_text").val("");
+				$("#password_text").val("");
 
 				//show error
-				error.innerText = errorMessage;
-				error.classList.remove("hide");
+				error.text(errorMessage);
+				error.prop("classList").remove("hide");
 			}
 			else {
-				error.classList.add("hide"); //hide error
+				error.prop("classList").add("hide"); //hide error
 
 				shared.user = json;
 
 				//set username in nav bar
-				const userA = document.getElementById("user_a");
-				userA.innerText = shared.user.username;
+				$("#user_a").text(shared.user.username);
 
 				//if employee
 				if(shared.user.roleId == ROLE_EMPLOYEE) {
 
 					//show employee section
-					employeeService.showSection();
+					employeeSection.showSection();
 
 					//if logged in as employee, do not display "manage tickets" nav bar menu item
-					const manageTicketsNavItem = document.getElementById(NAV_LI[NAV_MANAGE_TICKETS]);
-					manageTicketsNavItem.style.display = "none";
+					$("#" + NAV_LI[NAV_MANAGE_TICKETS]).css("display", "none");
 				}
 				//if manager
 				else if(shared.user.roleId === ROLE_MANAGER) {
 
 					//show manager section
-					managerService.showSection();
+					managerSection.showSection();
 				}
 			}
 		});
@@ -86,26 +85,24 @@ class LoginService {
 	showSection() {
 
 		//set username in nav bar
-		const userA = document.getElementById("user_a");
-		userA.innerText = "";
+		$("#user_a").text("");
 		
         //close other sections
         shared.closeSections();
 
         //open section
-        const login = document.getElementById("login_section");
-        login.style.display = "block";
+        $("#login_section").css("display", "block");
 
 		shared.clearData(); //clear data such as user
 
 		//clear username and password fields
-		document.getElementById("username_text").value = "";
-		document.getElementById("password_text").value = "";
+		$("#username_text").val("");
+		$("#password_text").val("");
 
         //disable nav bar
-		shared.disableNavBar();
+		navBar.disable();
 
-        shared.setManageNavBarDisplay();		
+        navBar.setManageDisplay();		
     }
 }
-const loginService = new LoginService();
+const loginSection = new LoginSection();

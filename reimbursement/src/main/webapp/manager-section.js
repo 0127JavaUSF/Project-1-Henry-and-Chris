@@ -1,4 +1,4 @@
-class ManagerService {
+class ManagerSection {
 
     constructor() {
         this.lastUsername = "";
@@ -15,13 +15,13 @@ class ManagerService {
         	//"none" filter
         	if(this.value == 0) {
         		
-                managerService.fillManageTicketTable(managerService.tickets, false);
+                managerSection.fillManageTicketTable(managerSection.tickets, false);
                 return;
         	}
 
             //sort by status
             let sorted = [];
-            for(let ticket of managerService.tickets) { //need to use managerService not "this" (which is filter)
+            for(let ticket of managerSection.tickets) { //need to use managerSection not "this" (which is filter)
 
                 //this.value is select status
                 if(ticket.statusId == this.value) { //value is a string so use == not ===
@@ -30,7 +30,7 @@ class ManagerService {
             }
 
             //update manager ticket table
-            managerService.fillManageTicketTable(sorted, false);
+            managerSection.fillManageTicketTable(sorted, false);
         });
     }
 
@@ -43,7 +43,7 @@ class ManagerService {
         }
         this.lastUsername = shared.user.username;
 
-        //get user tickets
+        //get all tickets
         shared.getRequest( {}, "http://localhost:8080/reimbursement/get-all-reimb", (json, statusCode, errorMessage)=> {
 
             if(!errorMessage) {
@@ -70,12 +70,12 @@ class ManagerService {
 
         for (let ticket of tickets) {
 
-            this.addRowToTicketTable(ticket);
+            this.addRowToManageTable(ticket);
         }
     }
 
     //add row to the manage ticket table
-    addRowToTicketTable(ticket, rowIndex = -1, tableRowElement = null, collapsedTableRowElement = null) {
+    addRowToManageTable(ticket, rowIndex = -1, tableRowElement = null, collapsedTableRowElement = null) {
 
         const body = document.getElementById("manage_ticket_body");
 
@@ -194,12 +194,12 @@ class ManagerService {
 
             approve.addEventListener("click", function() {
 
-                managerService.approveDenyPostRequest(this);
+                managerSection.approveDenyPostRequest(this);
             });
 
             deny.addEventListener("click", function() {
 
-                managerService.approveDenyPostRequest(this);
+                managerSection.approveDenyPostRequest(this);
             });
         }
 
@@ -236,7 +236,7 @@ class ManagerService {
             else {
                 shared.addClass(this.dataset.errorId, "hide");
 
-                managerService.onApproveDeny(this, updatedTicket);
+                managerSection.onApproveDeny(this, updatedTicket);
             }
         }.bind(button)); //this is button
     }
@@ -248,7 +248,7 @@ class ManagerService {
         const rowI = button.dataset.rowIndex;
 
         //replace ticket with updated ticket
-        managerService.tickets[rowI] = updatedTicket;
+        managerSection.tickets[rowI] = updatedTicket;
 
         //clear table row
         const row = document.getElementById("manage_ticket_row" + rowI);
@@ -259,7 +259,7 @@ class ManagerService {
         subrow.innerHTML = "";
 
         //replace table row with updated ticket
-        managerService.addRowToTicketTable(updatedTicket, rowI, row, subrow);
+        managerSection.addRowToManageTable(updatedTicket, rowI, row, subrow);
     }
 
     //show the manager section
@@ -273,13 +273,13 @@ class ManagerService {
         managerSection.style.display = "block";
 
         //update nav bar
-        shared.setManageNavBarDisplay();
+        navBar.setManageDisplay();
 
-        shared.setNavBar(NAV_MY_TICKETS, false, false);
-        shared.setNavBar(NAV_MANAGE_TICKETS, true, true);
-        shared.setNavBar(NAV_LOG_OUT, false, false);
+        navBar.setMenuItem(NAV_MY_TICKETS, false, false);
+        navBar.setMenuItem(NAV_MANAGE_TICKETS, true, true);
+        navBar.setMenuItem(NAV_LOG_OUT, false, false);
 
         this.getAllTicketsRequest();
     }
 }
-const managerService = new ManagerService();
+const managerSection = new ManagerSection();

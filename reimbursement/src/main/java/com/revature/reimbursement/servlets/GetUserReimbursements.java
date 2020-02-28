@@ -42,7 +42,7 @@ public class GetUserReimbursements extends HttpServlet {
 		super.service(req, resp);
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
         //get user from session
         HttpSession session = request.getSession();

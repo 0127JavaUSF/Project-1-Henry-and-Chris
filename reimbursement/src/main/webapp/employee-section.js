@@ -1,5 +1,7 @@
 
-class EmployeeService {
+//note: this file uses JQuery for learning purposes
+
+class EmployeeSection {
 
     constructor() {
         this.lastUsername = ""; //the last username that was logged in
@@ -10,39 +12,34 @@ class EmployeeService {
     //new ticket "amount" text input
     addAmountListener() {
 
-        const amount = document.getElementById("amount_text");
-        amount.addEventListener('blur', () => {
-
+        $("#amount_text").blur(function(){
             //convert to float
-            const amountFloat = this.getNewTicketAmount();
+            const amountFloat = employeeSection.getNewTicketAmount();
 
             //format in US dollars
             const amountInDollars = shared.formatCurrency(amountFloat);
 
-            amount.value = amountInDollars;
+            this.value = amountInDollars;
 
             //show "required" message if amount is 0
-            this.validateAmount();
+            employeeSection.validateAmount();
         });
     }
 
     //"clear receipt" button used when attaching receipt to new ticket
     addClearReceiptListener() {
 
-        const button = document.getElementById("clear_receipt_button");
-        button.addEventListener('click', () => {
+        $("#clear_receipt_button").click(() => {
 
             //remove receipt
-            const filePicker = document.getElementById("receipt_file");
-            filePicker.value = "";
+            $("#receipt_file").val("");
         });
     }
 
     //new ticket "type" select
     addTypeListener() {
 
-        const type = document.getElementById("type_select");
-        type.addEventListener('change', () => {
+        $("#type_select").change(() => {
 
             //show "required" message if "none" selected
             this.validateType();
@@ -52,8 +49,7 @@ class EmployeeService {
     //new ticket "description" text area
     addDescriptionListener() {
 
-        const description = document.getElementById("description_textarea");
-        description.addEventListener('blur', () => {
+        $("#description_textarea").blur(() => {
 
             //show "required" if empty
             this.validateDescription();
@@ -63,48 +59,41 @@ class EmployeeService {
     //new ticket button listener
     addNewTicketListener() {
 
-        const button = document.getElementById("new_ticket_button");
-        button.addEventListener('click', () => {
+        $("#new_ticket_button").click(function() {
 
-            const form = document.getElementById("new_ticket_form");
+            const form = $("#new_ticket_form");
 
             //if form not displayed
-            if (form.style.display === "none") {
-                form.style.display = "block"; //display
+            if (form.css("display") === "none") {
+                form.css("display", "block"); //display
                 
-                button.disabled = true;
+                this.disabled = true;
 
                 //clear form
-                this.clearNewTicketForm();
+                employeeSection.clearNewTicketForm();
             }
-            // else {
-            //     //do not toggle
-            //     form.style.display = "none";
-            // }
         });
     }
 
     //submit ticket button listener
     addSubmitTicketListener() {
 
-        const button = document.getElementById("submit");
-        button.addEventListener('click', (e) => {
+        $("#submit").click((e) => {
 
             //validate form
             const isValid = this.validateNewTicketForm();
             if(isValid) { //if valid
 
                 //get form fields
-                const typeId_ = document.getElementById("type_select").value;
+                const typeId_ = $("#type_select").val();
 
-                const receiptElement = document.getElementById("receipt_file");
-                const files = receiptElement.files;
+                const files = $("#receipt_file").prop('files');
                 const hasReceipt_ = files.length > 0 ? "true" : ""; //this will be a string in Java
 
                 //put in post params
                 const params = {
                     amount: this.getNewTicketAmount(),
-                    description: document.getElementById("description_textarea").value,
+                    description: $("#description_textarea").val(),
                     hasReceipt: hasReceipt_, //simply let Java know we have a receipt so the presigned url will be returned
                     typeId: typeId_
                 };
@@ -124,9 +113,6 @@ class EmployeeService {
                             shared.putRequest(files[0], files[0].type, json.presignedURL)
                         }
                         this.onSubmitTicket(errorMessage, json);
-
-                    
-                        
                     });
                 // }
             }
@@ -138,16 +124,16 @@ class EmployeeService {
     //clear new ticket form
     clearNewTicketForm() {
 
-        document.getElementById("amount_text").value = "";
+        $("#amount_text").val("");
         shared.addClass("amount_required", "hide");
 
-        document.getElementById("type_select").value = 0;
+        $("#type_select").val(0);
         shared.addClass("select_required", "hide");
 
-        document.getElementById("description_textarea").value = "";
+       $("#description_textarea").val("");
         shared.addClass("description_required", "hide");
             
-        document.getElementById("receipt_file").value = "";
+        $("#receipt_file").val("");
     }
 
     //new ticket post request callback
@@ -157,26 +143,25 @@ class EmployeeService {
         if (errorMessage) {
 
             //display error
-            const error = document.getElementById("submit_error");
-            error.innerText = errorMessage;
-            error.classList.remove("hide");
+            const error = $("#submit_error");
+            error.text(errorMessage);
+            error.prop("classList").remove("hide");
         }
         else {
             shared.addClass("submit_error", "hide");
 
             //update ticket table
             this.tickets.push(ticket);
-            this.addRowToTicketTable(ticket);
+            this.addRowToManageTable(ticket);
 
             //clear form
             this.clearNewTicketForm();
 
             //close the section
-            document.getElementById("new_ticket_form").style.display = "none";
+            $("#new_ticket_form").css("display", "none");
 
             //enable new ticket button
-            const button = document.getElementById("new_ticket_button");
-            button.disabled = false;
+            $("#new_ticket_button").prop("disabled", false);
         }
     }
 
@@ -190,12 +175,11 @@ class EmployeeService {
         this.lastUsername = shared.user.username;
 
         //clear table
-        const ticketBody = document.getElementById("ticket_body");
-        ticketBody.innerHTML = "";
+        $("#ticket_body").html("");
         this.ticketRowTotal = 0;
 
         //get user tickets
-        shared.postRequest( {}, "http://localhost:8080/reimbursement/get-user-reimb", (json, statusCode, errorMessage)=> {
+        shared.getRequest( {}, "http://localhost:8080/reimbursement/get-user-reimb", (json, statusCode, errorMessage)=> {
 
             if(!errorMessage) {
 
@@ -204,19 +188,19 @@ class EmployeeService {
                 for (let ticket of this.tickets) {
 
                     //add row
-                    this.addRowToTicketTable(ticket);
+                    this.addRowToManageTable(ticket);
                 }
             }
         });
     }
 
     //add row to "my tickets" table
-    addRowToTicketTable(ticket) {
+    addRowToManageTable(ticket) {
 
-        const body = document.getElementById("ticket_body");
+        const body = $("#ticket_body");
 
         let tr = document.createElement("tr");
-        body.appendChild(tr);
+        body.append(tr);
 
         //these attributes make the row clickable
         tr.classList.add("clickable_tr");
@@ -232,7 +216,7 @@ class EmployeeService {
 
         //this row is collapsable. it contains the description and receipt
         tr = document.createElement("tr");
-        body.appendChild(tr);
+        body.append(tr);
 
         const td = document.createElement("td");
         tr.appendChild(td);
@@ -283,9 +267,7 @@ class EmployeeService {
 
     //convert the new ticket amount to a Number
     getNewTicketAmount() {
-        const amount = document.getElementById("amount_text");
-
-        const noDollarSign = amount.value.replace('$', '').replace(/,/g, ''); //remove dollar sign
+        const noDollarSign = $("#amount_text").val().replace('$', '').replace(/,/g, ''); //remove dollar sign
         const amountNumber = Number.parseFloat(noDollarSign);
 
         if (Number.isNaN(amountNumber)) {
@@ -302,18 +284,16 @@ class EmployeeService {
         shared.closeSections();
 
         //show "my tickets" and "new ticket" section
-        const ticketsSection = document.getElementById("my_tickets_section");
-        ticketsSection.style.display = "block";
+        $("#my_tickets_section").css("display", "block");
 
-        const newTicketSection = document.getElementById("new_ticket_section");
-        newTicketSection.style.display = "block";
+        $("#new_ticket_section").css("display", "block");
 
         //update nav bar
-        shared.setManageNavBarDisplay();
+        navBar.setManageDisplay();
 
-        shared.setNavBar(NAV_MY_TICKETS, true, true);
-        shared.setNavBar(NAV_MANAGE_TICKETS, false, false);
-        shared.setNavBar(NAV_LOG_OUT, false, false);
+        navBar.setMenuItem(NAV_MY_TICKETS, true, true);
+        navBar.setMenuItem(NAV_MANAGE_TICKETS, false, false);
+        navBar.setMenuItem(NAV_LOG_OUT, false, false);
 
         //fill "my tickets" table
         this.fillTicketTable();
@@ -321,20 +301,19 @@ class EmployeeService {
 
     //validate the new ticket form amount
     validateAmount() {
-        const amount = document.getElementById("amount_text");
-        const amountRequired = document.getElementById("amount_required");
+        const amountRequired = $("#amount_required");
 
-        const noDollarSign = amount.value.replace('$', ''); //remove dollar sign
+        const noDollarSign = $("#amount_text").val().replace('$', ''); //remove dollar sign
         const amountNumber = Number.parseFloat(noDollarSign); //convert to float
 
         //if amount is invalid
         let isValid = true;
         if (!amountNumber || Number.isNaN(amountNumber) || amountNumber === 0) {
             isValid = false;
-            amountRequired.classList.remove("hide"); //show "required" error
+            amountRequired.prop("classList").remove("hide"); //show "required" error
         }
         else {
-            amountRequired.classList.add("hide");
+            amountRequired.prop("classList").add("hide");
         }
 
         return isValid;
@@ -343,30 +322,28 @@ class EmployeeService {
     //validate the new ticket form type
     validateType() {
 
-        const type = document.getElementById("type_select");
-        const typeRequired = document.getElementById("select_required");
+        const typeRequired = $("#select_required");
         let isValid = true;
-        if (type.value == 0) { //if type not selected
+        if ($("#type_select").val() == 0) { //if type not selected
             isValid = false;
-            typeRequired.classList.remove("hide"); //show "required"
+            typeRequired.prop("classList").remove("hide"); //show "required"
         }
         else {
-            typeRequired.classList.add("hide");
+            typeRequired.prop("classList").add("hide");
         }
         return isValid;
     }
 
     //validate the new ticket form description
     validateDescription() {
-        const description = document.getElementById("description_textarea");
-        const descriptionRequired = document.getElementById("description_required");
+        const descriptionRequired = $("#description_required");
         let isValid = true;
-        if (!description.value) { //if type not selected
+        if (!$("#description_textarea").val()) { //if type not selected
             isValid = false;
-            descriptionRequired.classList.remove("hide"); //show "required"
+            descriptionRequired.prop("classList").remove("hide"); //show "required"
         }
         else {
-            descriptionRequired.classList.add("hide");
+            descriptionRequired.prop("classList").add("hide");
         }
         return isValid;
     }
@@ -387,4 +364,4 @@ class EmployeeService {
         return isValid;
     }
 }
-const employeeService = new EmployeeService();
+const employeeSection = new EmployeeSection();
