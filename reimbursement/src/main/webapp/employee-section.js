@@ -102,17 +102,13 @@ class EmployeeSection {
                 // if(files.length > 0) {
                 //     shared.postRequestMultiPart(params, files[0], "http://localhost:8080/reimbursement/insert-multipart", (json, statusCode, errorMessage)=> {
 
-                //         this.onSubmitTicket(errorMessage, json);
+                //         this.onSubmitTicket(errorMessage, files[0], json);
                 //     });
                 // }
                 // else {
                     shared.postRequest(params, "http://localhost:8080/reimbursement/insert", (json, statusCode, errorMessage)=> {
 
-                        if(hasReceipt_)
-                        {
-                            shared.putRequest(files[0], files[0].type, json.presignedURL)
-                        }
-                        this.onSubmitTicket(errorMessage, json);
+                        this.onSubmitTicket(errorMessage, files[0], json);
                     });
                 // }
             }
@@ -137,7 +133,7 @@ class EmployeeSection {
     }
 
     //new ticket post request callback
-    onSubmitTicket(errorMessage, ticket) {
+    onSubmitTicket(errorMessage, receiptFile, ticket) {
 
         //if error
         if (errorMessage) {
@@ -148,20 +144,27 @@ class EmployeeSection {
             error.prop("classList").remove("hide");
         }
         else {
-            shared.addClass("submit_error", "hide");
 
-            //update ticket table
-            this.tickets.push(ticket);
-            this.addRowToManageTable(ticket);
+            if(receiptFile)
+            {
+                shared.putRequest(receiptFile, receiptFile.type, ticket.presignedURL, ()=> {
 
-            //clear form
-            this.clearNewTicketForm();
+                    shared.addClass("submit_error", "hide");
 
-            //close the section
-            $("#new_ticket_form").css("display", "none");
-
-            //enable new ticket button
-            $("#new_ticket_button").prop("disabled", false);
+                    //update ticket table
+                    this.tickets.push(ticket);
+                    this.addRowToTicketTable(ticket);
+        
+                    //clear form
+                    this.clearNewTicketForm();
+        
+                    //close the section
+                    $("#new_ticket_form").css("display", "none");
+        
+                    //enable new ticket button
+                    $("#new_ticket_button").prop("disabled", false);
+                });
+            }
         }
     }
 
@@ -188,14 +191,14 @@ class EmployeeSection {
                 for (let ticket of this.tickets) {
 
                     //add row
-                    this.addRowToManageTable(ticket);
+                    this.addRowToTicketTable(ticket);
                 }
             }
         });
     }
 
     //add row to "my tickets" table
-    addRowToManageTable(ticket) {
+    addRowToTicketTable(ticket) {
 
         const body = $("#ticket_body");
 
@@ -239,28 +242,34 @@ class EmployeeSection {
         div.appendChild(p);
         p.innerText = ticket.description;
 
-        const imgDiv = document.createElement("div");
-        imgDiv.className = "text-center";
-        div.appendChild(imgDiv);
+        //test receipt
+        //receiptImg.setAttribute("src", "/reimbursement/receipt.jpeg");
 
-        const receiptImg = document.createElement("img");
-        imgDiv.appendChild(receiptImg);
-        receiptImg.setAttribute("src", "/reimbursement/receipt.jpeg");
-        //once receipts work, uncomment this code
-        //receiptImg.setAttribute("src", ticket.receipt);
-        receiptImg.setAttribute("alt", "attachment");
+        //if receipt
+        if(ticket.receipt && ticket.receipt !== "") {
 
-        //when image loads
-        receiptImg.addEventListener("load", function() { //arrow function "this" is wrong context. we want the element
+            const imgDiv = document.createElement("div");
+            imgDiv.className = "text-center";
+            div.appendChild(imgDiv);
+    
+            const receiptImg = document.createElement("img");
+            imgDiv.appendChild(receiptImg);
 
-            //resize the receipt to 20% of the width of the window
-            const origWidth = this.width;
-            const newWidth = window.innerWidth * .2;
-            const percent = newWidth / origWidth;
-            
-            this.width *= percent;
-            this.height *= percent;
-        });
+            receiptImg.setAttribute("src", ticket.receipt);
+            receiptImg.setAttribute("alt", "Receipt");
+
+            //when image loads
+            receiptImg.addEventListener("load", function() { //arrow function "this" is wrong context. we want the element
+
+                //resize the receipt to 20% of the width of the window
+                const origWidth = this.width;
+                const newWidth = window.innerWidth * .2;
+                const percent = newWidth / origWidth;
+                
+                this.width *= percent;
+                this.height *= percent;
+            });
+        }
 
         this.ticketRowTotal++;
     }
