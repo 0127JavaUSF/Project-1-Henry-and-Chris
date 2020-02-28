@@ -1,5 +1,5 @@
 
-//NOTE: THIS FILE USES JQUERY AS A LEARNING EXPERIENCE
+//note: this file uses JQuery for learning purposes
 
 class EmployeeSection {
 
