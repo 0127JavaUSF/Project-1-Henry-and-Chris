@@ -119,7 +119,14 @@ class EmployeeService {
                 // else {
                     shared.postRequest(params, "http://localhost:8080/reimbursement/insert", (json, statusCode, errorMessage)=> {
 
+                        if(hasReceipt_)
+                        {
+                            shared.putRequest(files[0], files[0].type, json.presignedURL)
+                        }
                         this.onSubmitTicket(errorMessage, json);
+
+                    
+                        
                     });
                 // }
             }

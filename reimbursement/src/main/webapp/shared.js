@@ -355,6 +355,25 @@ class Shared {
             callback({}, 404, "Error");
         }
     }
+    
+    async putRequest(file, contentType, url) {
+        try{
+            const config = {
+                method: 'PUT',
+                header: {
+                    'Content-Type': contentType,
+                },
+                body: file
+        }
+
+       const response = await fetch(url, config);
+       console.log(response.status);
+
+    }
+    catch (error){
+        console.log(error);
+    }
+}
 
     //convert the response code to an error string
     responseError(responseStatus) {
