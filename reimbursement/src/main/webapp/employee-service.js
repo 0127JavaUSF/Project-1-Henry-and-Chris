@@ -1,7 +1,7 @@
 
 //NOTE: THIS FILE USES JQUERY AS A LEARNING EXPERIENCE
 
-class EmployeeService {
+class EmployeeSection {
 
     constructor() {
         this.lastUsername = ""; //the last username that was logged in
@@ -14,7 +14,7 @@ class EmployeeService {
 
         $("#amount_text").blur(function(){
             //convert to float
-            const amountFloat = employeeService.getNewTicketAmount();
+            const amountFloat = employeeSection.getNewTicketAmount();
 
             //format in US dollars
             const amountInDollars = shared.formatCurrency(amountFloat);
@@ -22,7 +22,7 @@ class EmployeeService {
             this.value = amountInDollars;
 
             //show "required" message if amount is 0
-            employeeService.validateAmount();
+            employeeSection.validateAmount();
         });
     }
 
@@ -70,7 +70,7 @@ class EmployeeService {
                 this.disabled = true;
 
                 //clear form
-                employeeService.clearNewTicketForm();
+                employeeSection.clearNewTicketForm();
             }
         });
     }
@@ -108,6 +108,10 @@ class EmployeeService {
                 // else {
                     shared.postRequest(params, "http://localhost:8080/reimbursement/insert", (json, statusCode, errorMessage)=> {
 
+                        if(hasReceipt_)
+                        {
+                            shared.putRequest(files[0], files[0].type, json.presignedURL)
+                        }
                         this.onSubmitTicket(errorMessage, json);
                     });
                 // }
@@ -175,7 +179,7 @@ class EmployeeService {
         this.ticketRowTotal = 0;
 
         //get user tickets
-        shared.postRequest( {}, "http://localhost:8080/reimbursement/get-user-reimb", (json, statusCode, errorMessage)=> {
+        shared.getRequest( {}, "http://localhost:8080/reimbursement/get-user-reimb", (json, statusCode, errorMessage)=> {
 
             if(!errorMessage) {
 
@@ -360,4 +364,4 @@ class EmployeeService {
         return isValid;
     }
 }
-const employeeService = new EmployeeService();
+const employeeSection = new EmployeeSection();

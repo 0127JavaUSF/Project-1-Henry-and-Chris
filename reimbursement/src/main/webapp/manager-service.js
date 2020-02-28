@@ -43,7 +43,7 @@ class ManagerSection {
         }
         this.lastUsername = shared.user.username;
 
-        //get user tickets
+        //get all tickets
         shared.getRequest( {}, "http://localhost:8080/reimbursement/get-all-reimb", (json, statusCode, errorMessage)=> {
 
             if(!errorMessage) {

@@ -150,7 +150,7 @@ class Shared {
     }
 
     //postParams should be an object literal
-    async postRequest(postParams, url, callback, methodType = 'POST') {
+    async postRequest(postParams, url, callback) {
         try {
             //encode post params
             let formBody = [];
@@ -162,7 +162,7 @@ class Shared {
             formBody = formBody.join("&");
 
             const config = {
-                method: methodType,
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
                 },
@@ -266,6 +266,24 @@ class Shared {
             callback({}, 404, "Error");
         }
     }
+    
+    async putRequest(file, contentType, url) {
+        try {
+            const config = {
+                method: 'PUT',
+                header: {
+                    'Content-Type': contentType,
+                },
+                body: file
+            }
+
+            const response = await fetch(url, config);
+            console.log(response.status);
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
 
     //convert the response code to an error string
     responseError(responseStatus) {
@@ -303,21 +321,21 @@ document.addEventListener("DOMContentLoaded", function () {
         loginSection.addLoginEventListener();
     }
 
-    if(typeof employeeService !== "undefined") {
+    if(typeof employeeSection !== "undefined") {
 
-        employeeService.addNewTicketListener();
+        employeeSection.addNewTicketListener();
     
-        employeeService.addAmountListener();
+        employeeSection.addAmountListener();
 
-        employeeService.addTypeListener();
+        employeeSection.addTypeListener();
 
-        employeeService.addDescriptionListener();
+        employeeSection.addDescriptionListener();
     
         shared.fillTypeSelect("type_select");
 
-        employeeService.addClearReceiptListener();
+        employeeSection.addClearReceiptListener();
 
-        employeeService.addSubmitTicketListener();    
+        employeeSection.addSubmitTicketListener();    
     }
 
     if(typeof managerSection !== "undefined") {

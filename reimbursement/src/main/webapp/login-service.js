@@ -51,7 +51,7 @@ class LoginSection {
 				if(shared.user.roleId == ROLE_EMPLOYEE) {
 
 					//show employee section
-					employeeService.showSection();
+					employeeSection.showSection();
 
 					//if logged in as employee, do not display "manage tickets" nav bar menu item
 					const manageTicketsNavItem = document.getElementById(NAV_LI[NAV_MANAGE_TICKETS]);
