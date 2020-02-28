@@ -96,6 +96,9 @@ public class UserDAO implements IUserDAO
     /** hashes the User's password assuming it is in the database unhashed **/
     public void hashDatabasePasswords(int id) throws ConnectionException, SQLException
     {
+    	//one way hashing. hashToString(4...) means 2 to the power 4 (function runs 16 times), known as "key stretching". hash value contains original password, salt and hash algorithm
+    	//the "salt" are random bytes. if 2 passwords are identical, the random salt results in different hash values (to prevent rainbow table attacks)
+
     	//create the hasher
     	Hasher hash = BCrypt.withDefaults();
     	try(Connection connection = ConnectionUtil.getConnection()) {
@@ -109,8 +112,6 @@ public class UserDAO implements IUserDAO
             ResultSet result = prepared.executeQuery();
             if (result.next()) {                
             	char[] password = result.getString("ers_password").toCharArray();
-            	//one way hashing. 4 means 2 to the power 4. function runs 16 times, known as "key stretching". hash value contains original password, salt and hash algorithm
-            	//the "salt" are random bytes. if 2 passwords are identical, the random salt results in different hash values (to prevent rainbow table attacks)
                 String newPass = hash.hashToString(4,password);  
                 String sql2 = "UPDATE ers_users "
                 		+ "set ers_password = ? "

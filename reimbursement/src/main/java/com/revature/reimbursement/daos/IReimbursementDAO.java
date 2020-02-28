@@ -17,5 +17,7 @@ public interface IReimbursementDAO
     
     Reimbursement insertReimbursement(BigDecimal amount, String description, boolean hasReceipt, int authorId, int typeId) throws ConnectionException, InvalidUserException, SQLException;
     
+    boolean deleteReimbursement(int id) throws ConnectionException, InvalidReimbursementException, SQLException;
+
     Reimbursement resolve(int reimbursementId, int resolverUserId, int statusId) throws ConnectionException, InvalidReimbursementException, SQLException;
 }
