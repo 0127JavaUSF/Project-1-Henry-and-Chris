@@ -1,30 +1,12 @@
 package com.revature.reimbursement.daos;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.sql.SQLException;
-import java.util.List;
 
-
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.amazonaws.util.IOUtils;
 import com.revature.reimbursement.Reimbursement;
-import com.revature.reimbursement.exceptions.ConnectionException;
-import com.revature.reimbursement.exceptions.InvalidUserException;
 
 public class Test {
 

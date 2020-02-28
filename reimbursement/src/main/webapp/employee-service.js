@@ -3,7 +3,7 @@ class EmployeeService {
 
     constructor() {
         this.lastUsername = ""; //the last username that was logged in
-        this.tickets = []; //used by open tickets table
+        this.tickets = []; //used by my tickets table
         this.ticketRowTotal = 0;
     }
 
@@ -60,6 +60,7 @@ class EmployeeService {
         });
     }
 
+    //new ticket button listener
     addNewTicketListener() {
 
         const button = document.getElementById("new_ticket_button");
@@ -67,11 +68,13 @@ class EmployeeService {
 
             const form = document.getElementById("new_ticket_form");
 
+            //if form not displayed
             if (form.style.display === "none") {
-                form.style.display = "block";
+                form.style.display = "block"; //display
                 
                 button.disabled = true;
 
+                //clear form
                 this.clearNewTicketForm();
             }
             // else {
@@ -81,24 +84,28 @@ class EmployeeService {
         });
     }
 
+    //submit ticket button listener
     addSubmitTicketListener() {
 
         const button = document.getElementById("submit");
         button.addEventListener('click', (e) => {
 
+            //validate form
             const isValid = this.validateNewTicketForm();
-            if(isValid) {
+            if(isValid) { //if valid
 
+                //get form fields
                 const typeId_ = document.getElementById("type_select").value;
 
                 const receiptElement = document.getElementById("receipt_file");
                 const files = receiptElement.files;
                 const hasReceipt_ = files.length > 0 ? "true" : ""; //this will be a string in Java
 
+                //put in post params
                 const params = {
                     amount: this.getNewTicketAmount(),
                     description: document.getElementById("description_textarea").value,
-                    hasReceipt: hasReceipt_,
+                    hasReceipt: hasReceipt_, //simply let Java know we have a receipt so the presigned url will be returned
                     typeId: typeId_
                 };
 
@@ -128,6 +135,7 @@ class EmployeeService {
         });
     }
 
+    //clear new ticket form
     clearNewTicketForm() {
 
         document.getElementById("amount_text").value = "";
@@ -142,10 +150,13 @@ class EmployeeService {
         document.getElementById("receipt_file").value = "";
     }
 
+    //new ticket post request callback
     onSubmitTicket(errorMessage, ticket) {
 
+        //if error
         if (errorMessage) {
 
+            //display error
             const error = document.getElementById("submit_error");
             error.innerText = errorMessage;
             error.classList.remove("hide");
@@ -169,9 +180,10 @@ class EmployeeService {
         }
     }
 
+    //fill the "my tickets" table
     fillTicketTable() {
 
-        //if same user (we already have tickets)
+        //if user has not changed (we already have tickets)
         if(this.lastUsername === shared.user.username) {
             return;
         }
@@ -191,12 +203,14 @@ class EmployeeService {
 
                 for (let ticket of this.tickets) {
 
+                    //add row
                     this.addRowToTicketTable(ticket);
                 }
             }
         });
     }
 
+    //add row to "my tickets" table
     addRowToTicketTable(ticket) {
 
         const body = document.getElementById("ticket_body");
@@ -214,7 +228,7 @@ class EmployeeService {
         shared.setTableCell(tr, TYPES[ticket.typeId]);
         shared.setTableCell(tr, shared.formatCurrency(ticket.amount));
         shared.setTableCell(tr, STATUSES[ticket.statusId]);
-        shared.setTableCell(tr, ticket.resolved);
+        shared.setTableCell(tr, ticket.resolvedString);
 
         //this row is collapsable. it contains the description and receipt
         tr = document.createElement("tr");
@@ -231,12 +245,12 @@ class EmployeeService {
         div.id = "collaspe_div" + this.ticketRowTotal;
         div.classList.add("collapse");
 
-        //Description heading
+        //description heading
         const h4 = document.createElement("h4");
         div.appendChild(h4);
         h4.innerText = "Description:";
 
-        //Description text
+        //description text
         const p = document.createElement("p");
         div.appendChild(p);
         p.innerText = ticket.description;
@@ -255,7 +269,7 @@ class EmployeeService {
         //when image loads
         receiptImg.addEventListener("load", function() { //arrow function "this" is wrong context. we want the element
 
-            //resize it to 20% of the width of the window
+            //resize the receipt to 20% of the width of the window
             const origWidth = this.width;
             const newWidth = window.innerWidth * .2;
             const percent = newWidth / origWidth;
@@ -267,6 +281,7 @@ class EmployeeService {
         this.ticketRowTotal++;
     }
 
+    //convert the new ticket amount to a Number
     getNewTicketAmount() {
         const amount = document.getElementById("amount_text");
 
@@ -280,12 +295,13 @@ class EmployeeService {
         return amountNumber;
     }
 
+    //show the employee section
     showSection() {
 
         //close other sections
         shared.closeSections();
 
-        //open these 2 sections
+        //show "my tickets" and "new ticket" section
         const ticketsSection = document.getElementById("my_tickets_section");
         ticketsSection.style.display = "block";
 
@@ -293,28 +309,29 @@ class EmployeeService {
         newTicketSection.style.display = "block";
 
         //update nav bar
-
         shared.setManageNavBarDisplay();
 
         shared.setNavBar(NAV_MY_TICKETS, true, true);
         shared.setNavBar(NAV_MANAGE_TICKETS, false, false);
         shared.setNavBar(NAV_LOG_OUT, false, false);
 
+        //fill "my tickets" table
         this.fillTicketTable();
     }
 
+    //validate the new ticket form amount
     validateAmount() {
         const amount = document.getElementById("amount_text");
         const amountRequired = document.getElementById("amount_required");
 
         const noDollarSign = amount.value.replace('$', ''); //remove dollar sign
-        const amountNumber = Number.parseFloat(noDollarSign);
+        const amountNumber = Number.parseFloat(noDollarSign); //convert to float
 
         //if amount is invalid
         let isValid = true;
         if (!amountNumber || Number.isNaN(amountNumber) || amountNumber === 0) {
             isValid = false;
-            amountRequired.classList.remove("hide");
+            amountRequired.classList.remove("hide"); //show "required" error
         }
         else {
             amountRequired.classList.add("hide");
@@ -323,6 +340,7 @@ class EmployeeService {
         return isValid;
     }
 
+    //validate the new ticket form type
     validateType() {
 
         const type = document.getElementById("type_select");
@@ -330,7 +348,7 @@ class EmployeeService {
         let isValid = true;
         if (type.value == 0) { //if type not selected
             isValid = false;
-            typeRequired.classList.remove("hide");
+            typeRequired.classList.remove("hide"); //show "required"
         }
         else {
             typeRequired.classList.add("hide");
@@ -338,13 +356,14 @@ class EmployeeService {
         return isValid;
     }
 
+    //validate the new ticket form description
     validateDescription() {
         const description = document.getElementById("description_textarea");
         const descriptionRequired = document.getElementById("description_required");
         let isValid = true;
         if (!description.value) { //if type not selected
             isValid = false;
-            descriptionRequired.classList.remove("hide");
+            descriptionRequired.classList.remove("hide"); //show "required"
         }
         else {
             descriptionRequired.classList.add("hide");
@@ -352,6 +371,7 @@ class EmployeeService {
         return isValid;
     }
 
+    //validate the entire new ticket form
     validateNewTicketForm() {
 
         let isValid = this.validateAmount();

@@ -1,10 +1,11 @@
 package com.revature.reimbursement.daos;
 
-import com.revature.reimbursement.exceptions.InvalidLoginException;
 import java.sql.SQLException;
-import com.revature.reimbursement.exceptions.InvalidUserException;
-import com.revature.reimbursement.exceptions.ConnectionException;
+
 import com.revature.reimbursement.User;
+import com.revature.reimbursement.exceptions.ConnectionException;
+import com.revature.reimbursement.exceptions.InvalidLoginException;
+import com.revature.reimbursement.exceptions.InvalidUserException;
 
 public interface IUserDAO
 {

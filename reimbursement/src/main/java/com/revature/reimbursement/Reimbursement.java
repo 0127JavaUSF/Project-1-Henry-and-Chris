@@ -1,11 +1,8 @@
 package com.revature.reimbursement;
 
-import java.sql.Blob;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 public class Reimbursement
 {
@@ -26,11 +23,11 @@ public class Reimbursement
     private String resolvedString;
     private String description;
     private String receipt;
-    private String presignedURL;
+    private String presignedURL; //used by AWS S3 bucket
     private int authorId;
-    private String authorString;
+    private String authorString; //first and last name of author
     private int resolverId;
-    private String resolverString;
+    private String resolverString; //first and last name of resolver
     private int statusId;
     private int typeId;
     
@@ -75,6 +72,7 @@ public class Reimbursement
         	this.submittedString = "";
         }
         else {
+        	//set the string version in the specified format
         	this.submittedString = new SimpleDateFormat("M/d/yyyy h:mm aa").format(submitted);
         }
     }
@@ -90,6 +88,7 @@ public class Reimbursement
         	this.resolvedString = "";
         }
         else {
+        	//set the string version in the specified format
         	this.resolvedString = new SimpleDateFormat("M/d/yyyy h:mm aa").format(resolved);
         }
     }
@@ -130,6 +129,7 @@ public class Reimbursement
         return this.statusId;
     }
     
+    //get the status name
     public String getStatusAsString() {
         switch (this.statusId) {
             case 1: {
@@ -155,6 +155,7 @@ public class Reimbursement
         return this.typeId;
     }
     
+    //get the type name
     public String getTypeAsString() {
         switch (this.statusId) {
             case 3: {

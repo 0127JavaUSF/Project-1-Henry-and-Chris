@@ -1,11 +1,12 @@
 package com.revature.reimbursement;
 
-import java.sql.SQLException;
-import java.sql.DriverManager;
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class ConnectionUtil
 {
+	//common http response codes
     public static final int STATUS_SUCCESS = 200;
     public static final int STATUS_CLIENT_ERROR = 400;
     public static final int STATUS_UNAUTHORIZED = 401;
@@ -18,6 +19,7 @@ public class ConnectionUtil
         String user = System.getenv("JDBC_ROLE_P1");
         String password = System.getenv("JDBC_PASSWORD_P1A");
         try {
+        	//get the JDBC connection
             return DriverManager.getConnection(url, user, password);
         }
         catch (SQLException e) {

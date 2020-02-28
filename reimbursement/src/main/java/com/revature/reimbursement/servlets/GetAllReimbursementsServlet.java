@@ -39,10 +39,6 @@ public class GetAllReimbursementsServlet extends HttpServlet {
 		resp.addHeader("Access-Control-Allow-Methods", "GET POST PUT DELETE");
 		resp.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
 		
-		//test
-//		LoginServlet.LoginTest(req); //login for testing purposes
-//		doPost(req, resp);
-		
 		super.service(req, resp);
 	}
 
@@ -62,6 +58,7 @@ public class GetAllReimbursementsServlet extends HttpServlet {
         
         ReimbursementDAO reimbDAO = new ReimbursementDAO();
         try {
+        	//get all reimbursements
         	List<Reimbursement> reimb = reimbDAO.getAllReimbursements();
                                                 
             response.setStatus(ConnectionUtil.STATUS_SUCCESS);

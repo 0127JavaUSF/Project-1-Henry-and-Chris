@@ -2,7 +2,6 @@ package com.revature.reimbursement.servlets;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -38,11 +37,7 @@ public class ResolveReimbursementServlet extends HttpServlet {
 		resp.addHeader("Access-Control-Allow-Headers", "authorization");
 		resp.addHeader("Access-Control-Allow-Methods", "GET POST PUT DELETE");
 		resp.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
-		
-		//test
-//		LoginServlet.LoginTest(req); //login for testing purposes
-//		doPost(req, resp);
-		
+
 		super.service(req, resp);
 	}
 
@@ -65,6 +60,7 @@ public class ResolveReimbursementServlet extends HttpServlet {
         
         ReimbursementDAO reimbDAO = new ReimbursementDAO();
         try {
+        	//resolve the reimbursement
         	Reimbursement reimb = reimbDAO.resolve(Integer.parseInt(reimbId), user.getId(), Integer.parseInt(statusId));
                                                 
             response.setStatus(ConnectionUtil.STATUS_SUCCESS);

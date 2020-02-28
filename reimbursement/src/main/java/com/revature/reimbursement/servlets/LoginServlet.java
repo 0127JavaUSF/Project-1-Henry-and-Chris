@@ -1,25 +1,20 @@
 package com.revature.reimbursement.servlets;
 
-import com.revature.reimbursement.User;
-import java.sql.SQLException;
-import com.revature.reimbursement.exceptions.InvalidLoginException;
-
-import at.favre.lib.crypto.bcrypt.BCrypt;
-import at.favre.lib.crypto.bcrypt.BCrypt.Hasher;
-
-import com.revature.reimbursement.exceptions.ConnectionException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.revature.reimbursement.ConnectionUtil;
-import com.revature.reimbursement.daos.UserDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.security.Provider.Service;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServlet;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.revature.reimbursement.ConnectionUtil;
+import com.revature.reimbursement.User;
+import com.revature.reimbursement.daos.UserDAO;
+import com.revature.reimbursement.exceptions.ConnectionException;
+import com.revature.reimbursement.exceptions.InvalidLoginException;
 
 public class LoginServlet extends HttpServlet
 {
@@ -35,7 +30,6 @@ public class LoginServlet extends HttpServlet
 			e.printStackTrace();
 		}
 	}
-	
 	
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -55,6 +49,7 @@ public class LoginServlet extends HttpServlet
 //    	ObjectMapper om = new ObjectMapper();
 //    	om.readValue(request.getReader(), User.class);		
 	    	   	
+		//use post parameters
     	String username = request.getParameter("username");
         String password = request.getParameter("password");
         

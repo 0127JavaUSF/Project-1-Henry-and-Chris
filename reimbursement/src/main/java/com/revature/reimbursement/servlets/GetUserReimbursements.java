@@ -1,7 +1,6 @@
 package com.revature.reimbursement.servlets;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import com.revature.reimbursement.Reimbursement;
 import com.revature.reimbursement.User;
 import com.revature.reimbursement.daos.ReimbursementDAO;
 import com.revature.reimbursement.exceptions.ConnectionException;
-import com.revature.reimbursement.exceptions.InvalidUserException;
 
 /**
  * Servlet implementation class GetUserReimbursements
@@ -41,10 +39,6 @@ public class GetUserReimbursements extends HttpServlet {
 		resp.addHeader("Access-Control-Allow-Methods", "GET POST PUT DELETE");
 		resp.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
 		
-		//test
-//		LoginServlet.LoginTest(req); //login for testing purposes
-//		doPost(req, resp);
-		
 		super.service(req, resp);
 	}
 
@@ -61,6 +55,7 @@ public class GetUserReimbursements extends HttpServlet {
         
         ReimbursementDAO reimbDAO = new ReimbursementDAO();
         try {
+        	//get user existing reimbursements
         	List<Reimbursement> reimb = reimbDAO.getReimbursements(user.getId());
                                                 
             response.setStatus(ConnectionUtil.STATUS_SUCCESS);

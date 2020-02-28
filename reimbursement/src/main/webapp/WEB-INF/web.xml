@@ -45,6 +45,10 @@
 		<servlet-name>resolve-reimb</servlet-name>
 		<servlet-class>com.revature.reimbursement.servlets.ResolveReimbursementServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>logout</servlet-name>
+		<servlet-class>com.revature.reimbursement.servlets.LogoutServlet</servlet-class>
+	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>login</servlet-name>
@@ -69,6 +73,10 @@
 	<servlet-mapping>
 		<servlet-name>resolve-reimb</servlet-name>
 		<url-pattern>/resolve-reimb</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>logout</servlet-name>
+		<url-pattern>/logout</url-pattern>
 	</servlet-mapping>
 	
 	<!-- do not use since this is a single page site
