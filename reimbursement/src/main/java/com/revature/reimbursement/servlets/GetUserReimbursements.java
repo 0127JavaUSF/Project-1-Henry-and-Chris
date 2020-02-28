@@ -1,7 +1,6 @@
 package com.revature.reimbursement.servlets;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import com.revature.reimbursement.Reimbursement;
 import com.revature.reimbursement.User;
 import com.revature.reimbursement.daos.ReimbursementDAO;
 import com.revature.reimbursement.exceptions.ConnectionException;
-import com.revature.reimbursement.exceptions.InvalidUserException;
 
 /**
  * Servlet implementation class GetUserReimbursements
