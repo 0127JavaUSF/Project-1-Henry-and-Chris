@@ -273,11 +273,11 @@ class ManagerService {
         managerSection.style.display = "block";
 
         //update nav bar
-        shared.setManageNavBarDisplay();
+        navBar.setManageDisplay();
 
-        shared.setNavBar(NAV_MY_TICKETS, false, false);
-        shared.setNavBar(NAV_MANAGE_TICKETS, true, true);
-        shared.setNavBar(NAV_LOG_OUT, false, false);
+        navBar.setMenuItem(NAV_MY_TICKETS, false, false);
+        navBar.setMenuItem(NAV_MANAGE_TICKETS, true, true);
+        navBar.setMenuItem(NAV_LOG_OUT, false, false);
 
         this.getAllTicketsRequest();
     }

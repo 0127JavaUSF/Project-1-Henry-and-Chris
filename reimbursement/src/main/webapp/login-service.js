@@ -103,9 +103,9 @@ class LoginService {
 		document.getElementById("password_text").value = "";
 
         //disable nav bar
-		shared.disableNavBar();
+		navBar.disable();
 
-        shared.setManageNavBarDisplay();		
+        navBar.setManageDisplay();		
     }
 }
 const loginService = new LoginService();

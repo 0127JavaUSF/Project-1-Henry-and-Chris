@@ -285,11 +285,11 @@ class EmployeeService {
         $("#new_ticket_section").css("display", "block");
 
         //update nav bar
-        shared.setManageNavBarDisplay();
+        navBar.setManageDisplay();
 
-        shared.setNavBar(NAV_MY_TICKETS, true, true);
-        shared.setNavBar(NAV_MANAGE_TICKETS, false, false);
-        shared.setNavBar(NAV_LOG_OUT, false, false);
+        navBar.setMenuItem(NAV_MY_TICKETS, true, true);
+        navBar.setMenuItem(NAV_MANAGE_TICKETS, false, false);
+        navBar.setMenuItem(NAV_LOG_OUT, false, false);
 
         //fill "my tickets" table
         this.fillTicketTable();
