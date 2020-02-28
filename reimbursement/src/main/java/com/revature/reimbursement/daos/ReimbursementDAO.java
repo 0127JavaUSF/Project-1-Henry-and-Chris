@@ -189,6 +189,33 @@ public class ReimbursementDAO implements IReimbursementDAO
         }
     }
     
+    /** Delete from database **/
+    @Override
+    public boolean deleteReimbursement(int id) throws ConnectionException, InvalidReimbursementException, SQLException {
+    	
+    	try(Connection connection = ConnectionUtil.getConnection()) {
+            if (connection == null) {
+                throw new ConnectionException();
+            }
+
+            String sql = "DELETE FROM ers_reimbursement WHERE reimb_id = ? RETURNING 1";
+
+    		PreparedStatement prepared = connection.prepareStatement(sql);
+    		prepared.setInt(1, id);
+            ResultSet result = prepared.executeQuery();
+            
+            if (result.next()) {
+
+            	return true;
+            }
+            
+            throw new InvalidReimbursementException();
+        }
+        catch (SQLException e) {
+            throw new SQLException();
+        }
+    }
+    
     /** Accept or deny the reimbursement **/
     @Override
     public Reimbursement resolve(int reimbursementId, int resolverUserId, int statusId) throws ConnectionException, InvalidReimbursementException, SQLException {
