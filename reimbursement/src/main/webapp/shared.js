@@ -298,9 +298,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     navBar.addClickListeners();
 
-    if(typeof loginService !== "undefined") {
+    if(typeof loginSection !== "undefined") {
 
-        loginService.addLoginEventListener();
+        loginSection.addLoginEventListener();
     }
 
     if(typeof employeeService !== "undefined") {
@@ -320,12 +320,12 @@ document.addEventListener("DOMContentLoaded", function () {
         employeeService.addSubmitTicketListener();    
     }
 
-    if(typeof managerService !== "undefined") {
+    if(typeof managerSection !== "undefined") {
    
         //add options to select
         shared.fillStatusSelect("filter_status_select");
 
         //add event listener to select
-        managerService.addFilterListener();
+        managerSection.addFilterListener();
     }
 });

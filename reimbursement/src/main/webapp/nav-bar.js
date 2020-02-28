@@ -22,7 +22,7 @@ class NavBar {
         manageTickets.addEventListener("click", (e)=> {
 
             //show manager section
-            managerService.showSection();
+            managerSection.showSection();
 
             e.preventDefault();
         });
@@ -35,7 +35,7 @@ class NavBar {
             shared.getRequest( {}, "http://localhost:8080/reimbursement/logout", (json, statusCode, errorMessage)=> {
 
                 //show login section
-                loginService.showSection();
+                loginSection.showSection();
             });
 
             e.preventDefault();

@@ -1,5 +1,5 @@
 
-class LoginService {
+class LoginSection {
 
 	//login button event listener
 	addLoginEventListener() {
@@ -61,7 +61,7 @@ class LoginService {
 				else if(shared.user.roleId === ROLE_MANAGER) {
 
 					//show manager section
-					managerService.showSection();
+					managerSection.showSection();
 				}
 			}
 		});
@@ -108,4 +108,4 @@ class LoginService {
         navBar.setManageDisplay();		
     }
 }
-const loginService = new LoginService();
+const loginSection = new LoginSection();

@@ -148,7 +148,7 @@ class EmployeeService {
 
             //update ticket table
             this.tickets.push(ticket);
-            this.addRowToTicketTable(ticket);
+            this.addRowToManageTable(ticket);
 
             //clear form
             this.clearNewTicketForm();
@@ -184,14 +184,14 @@ class EmployeeService {
                 for (let ticket of this.tickets) {
 
                     //add row
-                    this.addRowToTicketTable(ticket);
+                    this.addRowToManageTable(ticket);
                 }
             }
         });
     }
 
     //add row to "my tickets" table
-    addRowToTicketTable(ticket) {
+    addRowToManageTable(ticket) {
 
         const body = $("#ticket_body");
 
