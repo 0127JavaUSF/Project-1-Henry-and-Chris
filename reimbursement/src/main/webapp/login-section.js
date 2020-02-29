@@ -72,9 +72,9 @@ class LoginSection {
 		const xhr = new XMLHttpRequest();
 
 		const url = "http://localhost:8080/reimbursement/login";
-		xhr.open('GET', url);
+		xhr.open("GET", url);
 
-		xhr.addEventListener('loadend', () => {
+		xhr.addEventListener("loadend", () => {
 			const reponse = xhr.response;
 		})
 

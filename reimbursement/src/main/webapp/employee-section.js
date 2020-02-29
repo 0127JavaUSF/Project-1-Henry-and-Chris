@@ -87,7 +87,7 @@ class EmployeeSection {
                 //get form fields
                 const typeId_ = $("#type_select").val();
 
-                const files = $("#receipt_file").prop('files');
+                const files = $("#receipt_file").prop("files");
                 const hasReceipt_ = files.length > 0 ? "true" : ""; //this will be a string in Java
 
                 //put in post params
@@ -147,7 +147,7 @@ class EmployeeSection {
 
             if(receiptFile)
             {
-                shared.putRequest(receiptFile, receiptFile.type, ticket.presignedURL, ()=> {
+                shared.putRequestAWS(receiptFile, receiptFile.type, ticket.presignedURL, ()=> {
 
                     shared.addClass("submit_error", "hide");
 

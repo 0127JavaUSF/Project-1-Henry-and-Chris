@@ -108,9 +108,9 @@ class Shared {
     //returns a string in format $X.XX
     formatCurrency(amount) {
 
-        const formatter = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
+        const formatter = new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
             minimumFractionDigits: 2
         })
 
@@ -125,7 +125,7 @@ class Shared {
 
         try {
             const config = {
-                method: 'GET',
+                method: "GET",
             }
 
             const response = await fetch(url, config);
@@ -162,9 +162,9 @@ class Shared {
             formBody = formBody.join("&");
 
             const config = {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
                 },
                 body: formBody
             }
@@ -192,12 +192,12 @@ class Shared {
 
     //postParams should be an object literal
     //this works with file upload (such as receipt)
-    //note: not used because we are uploading to AWS using a presigned url, not our server
+    //note: not used because we are uploading to AWS using a presigned url
     async postRequestMultiPart(postParams, file, url, callback) {
         try {
             //append file
             const data = new FormData();
-            data.append('file', file);
+            data.append("file", file);
 
             //append post params
             for (let property in postParams) {
@@ -206,7 +206,7 @@ class Shared {
             }
 
             const config = {
-                method: 'POST',
+                method: "POST",
                 body: data
             }
 
@@ -234,14 +234,14 @@ class Shared {
     }
 
     //postParams should be an object literal
-    //this version works with Jackson marshalling in Java
+    //this version works with Jackson unmarshalling in Java
     async postRequestJSON(postParams, url, callback) {
         try {    
             const config = {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(postParams)
             }
@@ -267,12 +267,51 @@ class Shared {
         }
     }
     
-    async putRequest(file, contentType, url, callback) {
+    //postParams should be an object literal
+    async putRequest(postParams, url, callback) {
+        try {
+            //encode post params
+            let formBody = [];
+            for (let property in postParams) {
+                formBody.push(property + "=" + postParams[property]);
+            }
+            formBody = formBody.join("&");
+
+            const config = {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+                },
+                body: formBody
+            }
+
+            const response = await fetch(url, config);
+
+            //if error
+            if (response.status >= 400) {
+
+                let errorMessage = this.responseError(response.status);
+
+                callback({}, response.status, errorMessage);
+                return;
+            }
+
+            const json = await response.json();
+
+            callback(json, response.status, "");
+        }
+        catch (error) {
+
+            callback({}, 404, "Error");
+        }
+    }
+
+    async putRequestAWS(file, contentType, url, callback) {
         try {
             const config = {
-                method: 'PUT',
+                method: "PUT",
                 header: {
-                    'Content-Type': contentType,
+                    "Content-Type": contentType,
                 },
                 body: file
             }
