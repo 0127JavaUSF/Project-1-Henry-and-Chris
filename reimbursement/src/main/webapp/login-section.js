@@ -42,28 +42,33 @@ class LoginSection {
 			else {
 				error.prop("classList").add("hide"); //hide error
 
-				shared.user = json;
-
-				//set username in nav bar
-				$("#user_a").text(shared.user.username);
-
-				//if employee
-				if(shared.user.roleId == ROLE_EMPLOYEE) {
-
-					//show employee section
-					employeeSection.showSection();
-
-					//if logged in as employee, do not display "manage tickets" nav bar menu item
-					$("#" + NAV_LI[NAV_MANAGE_TICKETS]).css("display", "none");
-				}
-				//if manager
-				else if(shared.user.roleId === ROLE_MANAGER) {
-
-					//show manager section
-					managerSection.showSection();
-				}
+				this.onLogin(json);
 			}
 		});
+	}
+
+	onLogin(user) {
+
+		shared.user = user;
+
+		//set username in nav bar
+		$("#user_a").text(shared.user.username);
+
+		//if employee
+		if(shared.user.roleId == ROLE_EMPLOYEE) {
+
+			//show employee section
+			employeeSection.showSection();
+
+			//if logged in as employee, do not display "manage tickets" nav bar menu item
+			$("#" + NAV_LI[NAV_MANAGE_TICKETS]).css("display", "none");
+		}
+		//if manager
+		else if(shared.user.roleId === ROLE_MANAGER) {
+
+			//show manager section
+			managerSection.showSection();
+		}
 	}
 
 	//get user using XMLHttpRequest (not used)

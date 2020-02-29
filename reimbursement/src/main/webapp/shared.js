@@ -387,4 +387,22 @@ document.addEventListener("DOMContentLoaded", function () {
         //add event listener to select
         managerSection.addFilterListener();
     }
+
+        //check if already logged in (possible if site is open again in another tab)
+        //get user tickets
+        shared.getRequest( {}, "http://localhost:8080/reimbursement/get-user", (json, statusCode, errorMessage)=> {
+
+            if(!errorMessage) {
+
+                //if already logged in
+                if(Object.keys(json).length) { //if json (which is the user) is not an empty object
+
+                    loginSection.onLogin(json);
+                }
+                else {
+
+                    loginSection.showSection();
+                }
+            }
+        });
 });
