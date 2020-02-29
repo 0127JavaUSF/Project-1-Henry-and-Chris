@@ -10,7 +10,7 @@ class ManagerSection {
     addFilterListener() {
 
         const filter = document.getElementById("filter_status_select");
-        filter.addEventListener('change', function() {
+        filter.addEventListener("change", function() {
         	
         	//"none" filter
         	if(this.value == 0) {
@@ -194,12 +194,12 @@ class ManagerSection {
 
             approve.addEventListener("click", function() {
 
-                managerSection.approveDenyPostRequest(this);
+                managerSection.approveDenyRequest(this);
             });
 
             deny.addEventListener("click", function() {
 
-                managerSection.approveDenyPostRequest(this);
+                managerSection.approveDenyRequest(this);
             });
         }
 
@@ -216,14 +216,14 @@ class ManagerSection {
         });
     }
 
-    approveDenyPostRequest(button) {
+    approveDenyRequest(button) {
 
         const postParams = {
             reimbId: button.dataset.reimbId,
             statusId: button.dataset.statusId
         };
         
-        shared.postRequest(postParams, "http://localhost:8080/reimbursement/resolve-reimb", function(updatedTicket, statusCode, errorMessage) {
+        shared.putRequest(postParams, "http://localhost:8080/reimbursement/resolve-reimb", function(updatedTicket, statusCode, errorMessage) {
 
             //if post error
             if (errorMessage) {

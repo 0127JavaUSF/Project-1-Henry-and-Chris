@@ -1,6 +1,8 @@
 package com.revature.reimbursement.servlets;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -8,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.reimbursement.ConnectionUtil;
@@ -42,9 +46,9 @@ public class ResolveReimbursementServlet extends HttpServlet {
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPut(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
         //get user from session
         HttpSession session = request.getSession();
@@ -54,9 +58,23 @@ public class ResolveReimbursementServlet extends HttpServlet {
         	response.setStatus(ConnectionUtil.STATUS_FORBIDDEN);
         	return;
         }
+
+        //getParameter() does not work with PUT request
+//    	String reimbId = request.getParameter("reimbId");
+//    	String statusId = request.getParameter("statusId");
         
-    	String reimbId = request.getParameter("reimbId");
-        String statusId = request.getParameter("statusId");
+        //only using PUT because it is proper according to REST but honestly PUT is not as user friendly because getting the parameters is more code
+        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+        String data = br.readLine(); //this is a string with all the parameters separated by &
+        String[] params = data.split("&"); //get each seperate parameter (ie: reimbId=1)
+        String reimbId = params[0].substring(params[0].lastIndexOf("=") + 1); //get actual value after = sign
+        String statusId = params[1].substring(params[1].lastIndexOf("=") + 1);
+        
+        //testing
+//        Logger logger = Logger.getRootLogger();
+//        logger.debug("data = " + data);
+//        logger.debug("reimbId = " + reimbId);
+//        logger.debug("statusId = " + statusId);
         
         ReimbursementDAO reimbDAO = new ReimbursementDAO();
         try {
