@@ -267,7 +267,7 @@ class Shared {
         }
     }
     
-    async putRequest(file, contentType, url) {
+    async putRequest(file, contentType, url, callback) {
         try {
             const config = {
                 method: 'PUT',
@@ -283,6 +283,8 @@ class Shared {
         catch (error) {
             console.log(error);
         }
+
+        callback();
     }
 
     //convert the response code to an error string
