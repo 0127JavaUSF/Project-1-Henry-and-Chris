@@ -23,7 +23,7 @@
 		</init-param>
 		-->
 
-		<load-on-startup>1</load-on-startup>
+		<load-on-startup>2</load-on-startup>
 	</servlet>
 	<servlet>
 		<servlet-name>insert</servlet-name>
@@ -48,6 +48,12 @@
 	<servlet>
 		<servlet-name>logout</servlet-name>
 		<servlet-class>com.revature.reimbursement.servlets.LogoutServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>get-user</servlet-name>
+		<servlet-class>com.revature.reimbursement.servlets.GetUserServlet</servlet-class>
+		
+		<load-on-startup>1</load-on-startup>
 	</servlet>
 
 	<servlet-mapping>
@@ -77,6 +83,10 @@
 	<servlet-mapping>
 		<servlet-name>logout</servlet-name>
 		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>get-user</servlet-name>
+		<url-pattern>/get-user</url-pattern>
 	</servlet-mapping>
 	
 	<!-- do not use since this is a single page site

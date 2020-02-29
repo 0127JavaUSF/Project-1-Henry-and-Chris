@@ -14,11 +14,13 @@ import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 
 import com.revature.reimbursement.ConnectionUtil;
+import com.revature.reimbursement.User;
 
 /**
  * Servlet implementation class InsertReimbursementMultiPartServlet
@@ -38,6 +40,15 @@ public class InsertReimbursementMultiPartServlet extends HttpServlet {
     //note: this is not used. instead an AWS presigned url is used to upload directly to Amazon
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+        //get user from session
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if(user == null) { //if not found
+        	
+        	response.setStatus(ConnectionUtil.STATUS_FORBIDDEN);
+        	return;
+        }
+        
         //if not multi part form
         if (!ServletFileUpload.isMultipartContent(request)) {
             
