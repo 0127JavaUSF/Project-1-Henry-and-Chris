@@ -36,6 +36,7 @@ public class GetUserReimbursements extends HttpServlet {
 				
 		//avoid CORS errors
 		resp.addHeader("Access-Control-Allow-Headers", "authorization");
+		resp.addHeader("Access-Control-Allow-Headers", "Content-Type");
 		resp.addHeader("Access-Control-Allow-Methods", "GET POST PUT DELETE");
 		resp.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
 		

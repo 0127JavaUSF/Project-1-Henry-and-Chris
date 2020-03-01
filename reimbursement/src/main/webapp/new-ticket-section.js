@@ -1,20 +1,12 @@
 
-//note: this file uses JQuery for learning purposes
-
-class EmployeeSection {
-
-    constructor() {
-        this.lastUsername = ""; //the last username that was logged in
-        this.tickets = []; //used by my tickets table
-        this.ticketRowTotal = 0;
-    }
+class NewTicketSection {
 
     //new ticket "amount" text input
     addAmountListener() {
 
         $("#amount_text").blur(function(){
             //convert to float
-            const amountFloat = employeeSection.getNewTicketAmount();
+            const amountFloat = newTicketSection.getAmount();
 
             //format in US dollars
             const amountInDollars = shared.formatCurrency(amountFloat);
@@ -22,7 +14,7 @@ class EmployeeSection {
             this.value = amountInDollars;
 
             //show "required" message if amount is 0
-            employeeSection.validateAmount();
+            newTicketSection.validateAmount();
         });
     }
 
@@ -70,7 +62,7 @@ class EmployeeSection {
                 this.disabled = true;
 
                 //clear form
-                employeeSection.clearNewTicketForm();
+                newTicketSection.clearForm();
             }
         });
     }
@@ -81,7 +73,7 @@ class EmployeeSection {
         $("#submit").click((e) => {
 
             //validate form
-            const isValid = this.validateNewTicketForm();
+            const isValid = this.validateForm();
             if(isValid) { //if valid
 
                 //get form fields
@@ -92,7 +84,7 @@ class EmployeeSection {
 
                 //put in post params
                 const params = {
-                    amount: this.getNewTicketAmount(),
+                    amount: this.getAmount(),
                     description: $("#description_textarea").val(),
                     hasReceipt: hasReceipt_, //simply let Java know we have a receipt so the presigned url will be returned
                     typeId: typeId_
@@ -102,13 +94,13 @@ class EmployeeSection {
                 // if(files.length > 0) {
                 //     shared.postRequestMultiPart(params, files[0], "http://localhost:8080/reimbursement/insert-multipart", (json, statusCode, errorMessage)=> {
 
-                //         this.onSubmitTicket(errorMessage, files[0], json);
+                //         this.onSubmit(errorMessage, files[0], json);
                 //     });
                 // }
                 // else {
                     shared.postRequest(params, "http://localhost:8080/reimbursement/insert", (json, statusCode, errorMessage)=> {
 
-                        this.onSubmitTicket(errorMessage, files[0], json);
+                        this.onSubmit(errorMessage, files[0], json);
                     });
                 // }
             }
@@ -118,7 +110,7 @@ class EmployeeSection {
     }
 
     //clear new ticket form
-    clearNewTicketForm() {
+    clearForm() {
 
         $("#amount_text").val("");
         shared.addClass("amount_required", "hide");
@@ -126,14 +118,14 @@ class EmployeeSection {
         $("#type_select").val(0);
         shared.addClass("select_required", "hide");
 
-       $("#description_textarea").val("");
+        $("#description_textarea").val("");
         shared.addClass("description_required", "hide");
             
         $("#receipt_file").val("");
     }
 
     //new ticket post request callback
-    onSubmitTicket(errorMessage, receiptFile, ticket) {
+    onSubmit(errorMessage, receiptFile, ticket) {
 
         //if error
         if (errorMessage) {
@@ -151,132 +143,39 @@ class EmployeeSection {
 
                     shared.addClass("submit_error", "hide");
 
-                    //update ticket table
-                    this.tickets.push(ticket);
-                    this.addRowToTicketTable(ticket);
-        
-                    //clear form
-                    this.clearNewTicketForm();
-        
-                    //close the section
-                    $("#new_ticket_form").css("display", "none");
-        
-                    //enable new ticket button
-                    $("#new_ticket_button").prop("disabled", false);
+                    this.onReceiptHandled(ticket);
                 });
             }
-        }
-    }
-
-    //fill the "my tickets" table
-    fillTicketTable() {
-
-        //if user has not changed (we already have tickets)
-        if(this.lastUsername === shared.user.username) {
-            return;
-        }
-        this.lastUsername = shared.user.username;
-
-        //clear table
-        $("#ticket_body").html("");
-        this.ticketRowTotal = 0;
-
-        //get user tickets
-        shared.getRequest( {}, "http://localhost:8080/reimbursement/get-user-reimb", (json, statusCode, errorMessage)=> {
-
-            if(!errorMessage) {
-
-                this.tickets = json;
-
-                for (let ticket of this.tickets) {
-
-                    //add row
-                    this.addRowToTicketTable(ticket);
-                }
+            else {
+                this.onReceiptHandled(ticket);
             }
-        });
+        }
     }
 
-    //add row to "my tickets" table
-    addRowToTicketTable(ticket) {
+    //the receipt was uploaded to AWS (or not if not attached by user)
+    onReceiptHandled(ticket) {
 
-        const body = $("#ticket_body");
-
-        let tr = document.createElement("tr");
-        body.append(tr);
-
-        //these attributes make the row clickable
-        tr.classList.add("clickable_tr");
-        tr.setAttribute("data-toggle", "collapse");
-        tr.setAttribute("data-target", "#collaspe_div" + this.ticketRowTotal);            
-
-        shared.setTableCell(tr, ticket.id);
-        shared.setTableCell(tr, ticket.submittedString);
-        shared.setTableCell(tr, TYPES[ticket.typeId]);
-        shared.setTableCell(tr, shared.formatCurrency(ticket.amount));
-        shared.setTableCell(tr, STATUSES[ticket.statusId]);
-        shared.setTableCell(tr, ticket.resolvedString);
-
-        //this row is collapsable. it contains the description and receipt
-        tr = document.createElement("tr");
-        body.append(tr);
-
-        const td = document.createElement("td");
-        tr.appendChild(td);
-        td.setAttribute("colspan", "7");
-        td.style.width = "100%";
-
-        //collapsable div
-        const div = document.createElement("div");
-        td.appendChild(div);       
-        div.id = "collaspe_div" + this.ticketRowTotal;
-        div.classList.add("collapse");
-
-        //description heading
-        const h4 = document.createElement("h4");
-        div.appendChild(h4);
-        h4.innerText = "Description:";
-
-        //description text
-        const p = document.createElement("p");
-        div.appendChild(p);
-        p.innerText = ticket.description;
-
-        //test receipt
-        //receiptImg.setAttribute("src", "/reimbursement/receipt.jpeg");
-
-        //if receipt
-        if(ticket.receipt && ticket.receipt !== "") {
-
-            const imgDiv = document.createElement("div");
-            imgDiv.className = "text-center";
-            div.appendChild(imgDiv);
-    
-            const receiptImg = document.createElement("img");
-            imgDiv.appendChild(receiptImg);
-
-            receiptImg.setAttribute("src", ticket.receipt);
-            receiptImg.setAttribute("alt", "Receipt");
-
-            //when image loads
-            receiptImg.addEventListener("load", function() { //arrow function "this" is wrong context. we want the element
-
-                //resize the receipt to 20% of the width of the window
-                const origWidth = this.width;
-                const newWidth = window.innerWidth * .2;
-                const percent = newWidth / origWidth;
-                
-                this.width *= percent;
-                this.height *= percent;
-            });
+        //update ticket tables
+        if(shared.user.roleId === ROLE_MANAGER) {
+            managerSection.onNewTicket(ticket);
         }
+        myTicketsSection.onNewTicket(ticket);
 
-        this.ticketRowTotal++;
+        //clear form
+        this.clearForm();
+
+        //close the section
+        $("#new_ticket_form").css("display", "none");
+
+        //enable new ticket button
+        $("#new_ticket_button").prop("disabled", false);
     }
 
     //convert the new ticket amount to a Number
-    getNewTicketAmount() {
-        const noDollarSign = $("#amount_text").val().replace('$', '').replace(/,/g, ''); //remove dollar sign
+    getAmount() {
+
+        //remove negative, dollar sign, and commas
+        const noDollarSign = $("#amount_text").val().replace('-', '').replace('$', '').replace(/,/g, '');
         const amountNumber = Number.parseFloat(noDollarSign);
 
         if (Number.isNaN(amountNumber)) {
@@ -286,26 +185,10 @@ class EmployeeSection {
         return amountNumber;
     }
 
-    //show the employee section
+    //show the new ticket section
     showSection() {
 
-        //close other sections
-        shared.closeSections();
-
-        //show "my tickets" and "new ticket" section
-        $("#my_tickets_section").css("display", "block");
-
         $("#new_ticket_section").css("display", "block");
-
-        //update nav bar
-        navBar.setManageDisplay();
-
-        navBar.setMenuItem(NAV_MY_TICKETS, true, true);
-        navBar.setMenuItem(NAV_MANAGE_TICKETS, false, false);
-        navBar.setMenuItem(NAV_LOG_OUT, false, false);
-
-        //fill "my tickets" table
-        this.fillTicketTable();
     }
 
     //validate the new ticket form amount
@@ -347,9 +230,20 @@ class EmployeeSection {
     validateDescription() {
         const descriptionRequired = $("#description_required");
         let isValid = true;
-        if (!$("#description_textarea").val()) { //if type not selected
+        
+        const desc = $("#description_textarea").val();
+
+        //if empty
+        if (!desc) {
             isValid = false;
+            descriptionRequired.text("required");
             descriptionRequired.prop("classList").remove("hide"); //show "required"
+        }
+        //if too long
+        else if(desc.length > 499) {
+            isValid = false;
+            descriptionRequired.text("Description is too long");
+            descriptionRequired.prop("classList").remove("hide");
         }
         else {
             descriptionRequired.prop("classList").add("hide");
@@ -358,7 +252,7 @@ class EmployeeSection {
     }
 
     //validate the entire new ticket form
-    validateNewTicketForm() {
+    validateForm() {
 
         let isValid = this.validateAmount();
 
@@ -371,6 +265,6 @@ class EmployeeSection {
         }
 
         return isValid;
-    }
+    }    
 }
-const employeeSection = new EmployeeSection();
+const newTicketSection = new NewTicketSection();

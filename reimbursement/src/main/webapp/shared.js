@@ -338,6 +338,18 @@ class Shared {
         }
     }
 
+    //percentOfWindowWidth should be > 0 and < 1
+    resizeImg(img, percentOfWindowWidth) {
+
+        //resize the receipt to 20% of the width of the window
+        const origWidth = img.width;
+        const newWidth = window.innerWidth * percentOfWindowWidth;
+        const percent = newWidth / origWidth;
+        
+        img.width *= percent;
+        img.height *= percent;
+    }
+
     //set the table cell
     //tr is <tr> element. data is cell data
     setTableCell(tr, data) {
@@ -362,21 +374,25 @@ document.addEventListener("DOMContentLoaded", function () {
         loginSection.addLoginEventListener();
     }
 
-    if(typeof employeeSection !== "undefined") {
-
-        employeeSection.addNewTicketListener();
-    
-        employeeSection.addAmountListener();
-
-        employeeSection.addTypeListener();
-
-        employeeSection.addDescriptionListener();
-    
+    if(typeof myTicketsSection !== "undefined") {
+        
         shared.fillTypeSelect("type_select");
 
-        employeeSection.addClearReceiptListener();
+    }
 
-        employeeSection.addSubmitTicketListener();    
+    if(typeof newTicketSection !== "undefined") {
+
+        newTicketSection.addNewTicketListener();
+
+        newTicketSection.addAmountListener();
+
+        newTicketSection.addTypeListener();
+
+        newTicketSection.addDescriptionListener();
+
+        newTicketSection.addClearReceiptListener();
+
+        newTicketSection.addSubmitTicketListener();    
     }
 
     if(typeof managerSection !== "undefined") {
