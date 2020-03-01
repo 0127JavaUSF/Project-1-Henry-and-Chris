@@ -111,7 +111,7 @@ public class ReimbursementDAO implements IReimbursementDAO
             connection.setAutoCommit(false);
             
             //query returns the updated reimbursement record
-            String sql = "INSERT INTO ers_reimbursement (reimb_amount, reimb_description, reimb_author, reimb_type_id) VALUES (?, ?, ?, ?) RETURNING *;";
+            String sql = "INSERT INTO ers_reimbursement (reimb_amount, reimb_description, reimb_author, reimb_type_id) VALUES (?, ?, ?, ?) RETURNING reimb_id;";
             
             PreparedStatement prepared = connection.prepareStatement(sql);
             prepared.setBigDecimal(1, amount);
@@ -122,63 +122,79 @@ public class ReimbursementDAO implements IReimbursementDAO
             ResultSet result = prepared.executeQuery();
             if (result.next()) {
             	
-            	//set the updated reimbursement object
-                Reimbursement reimburse = new Reimbursement();
-                setReimbursementFromResultSet(reimburse, result);
+            	int id = result.getInt("reimb_id");
+            	
+                sql = "SELECT r.*, concat(u1.user_first_name, ' ', u1.user_last_name) AS author, concat(u2.user_first_name, ' ', u2.user_last_name) AS resolver FROM ers_reimbursement AS r LEFT JOIN ers_users AS u1 ON r.reimb_author = u1.ers_user_id LEFT JOIN ers_users AS u2 ON r.reimb_resolver = u2.ers_user_id WHERE r.reimb_id = ?;";
+
+                prepared = connection.prepareStatement(sql);
+                prepared.setInt(1, id);
                 
-                //if no receipt, we are done
-                if(!hasReceipt)
-                {
-                    connection.commit();
-                    return reimburse;
-                }
+                result = prepared.executeQuery();
                 
-                int id = reimburse.getId();
-                String bucketName = System.getenv("AWS_BUCKET_NAME");
-                // creates s3 object
-                new BasicAWSCredentials(System.getenv("AWS_ACCESS_KEY_ID"),System.getenv("AWS_SECRET_ACCESS_KEY"));
-                final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
-                                
-                java.util.Date expiration = new java.util.Date();
-                long expTimeMillis = expiration.getTime();
-                expTimeMillis += 15000;
-                expiration.setTime(expTimeMillis);
-                
-                //generates url for upload
-        		URL presignedURL = s3.generatePresignedUrl(bucketName, Integer.toString(id), expiration, HttpMethod.PUT);
-        		
-        		//link to the image to store in database
-                String url = "https://my-project-1-bucket.s3.amazonaws.com/" + id; //the AWS url includes the record id
+                if(result.next()) {
                 	
-                reimburse.setPresignedURL(presignedURL.toString());
-               
-                //update the record we just inserted with the receipt url from AWS
-                String sql2 = "UPDATE ers_reimbursement "
-                		+ "SET reimb_reciept = ? "
-                		+ "WHERE reimb_id = ?;";
-                
-                PreparedStatement prepared2 = connection.prepareStatement(sql2);
-                prepared2.setString(1, url);
-                prepared2.setInt(2, id);
-                
-                int result2 = prepared2.executeUpdate();
-                
-                if (result2 == 1)
-                {
-                	connection.commit();
-                	//sets the url for the reimburse object to retrieve the image
-                	reimburse.setReceipt(url);
-                	
-                	return reimburse;
-                }
-                else {
-                	if(connection != null) {
-                		connection.rollback();
-                	}
-                    throw new SQLException();
-                }
+	            	//set the updated reimbursement object
+	                Reimbursement reimburse = new Reimbursement();
+	                setReimbursementFromResultSet(reimburse, result);
+	                
+	                //set additional info
+	                reimburse.setAuthorString(result.getString("author"));
+	                reimburse.setResolverString(result.getString("resolver"));
+	                
+	                //if no receipt, we are done
+	                if(!hasReceipt)
+	                {
+	                    connection.commit();
+	                    return reimburse;
+	                }
+	                
+	                String bucketName = System.getenv("AWS_BUCKET_NAME");
+	                // creates s3 object
+	                new BasicAWSCredentials(System.getenv("AWS_ACCESS_KEY_ID"),System.getenv("AWS_SECRET_ACCESS_KEY"));
+	                final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
+	                                
+	                java.util.Date expiration = new java.util.Date();
+	                long expTimeMillis = expiration.getTime();
+	                expTimeMillis += 15000;
+	                expiration.setTime(expTimeMillis);
+	                
+	                //generates url for upload
+	        		URL presignedURL = s3.generatePresignedUrl(bucketName, Integer.toString(id), expiration, HttpMethod.PUT);
+	        		
+	        		//link to the image to store in database
+	                String url = "https://my-project-1-bucket.s3.amazonaws.com/" + id; //the AWS url includes the record id
+	                	
+	                reimburse.setPresignedURL(presignedURL.toString());
+	               
+	                //update the record we just inserted with the receipt url from AWS
+	                String sql2 = "UPDATE ers_reimbursement "
+	                		+ "SET reimb_reciept = ? "
+	                		+ "WHERE reimb_id = ?;";
+	                
+	                PreparedStatement prepared2 = connection.prepareStatement(sql2);
+	                prepared2.setString(1, url);
+	                prepared2.setInt(2, id);
+	                
+	                int result2 = prepared2.executeUpdate();
+	                
+	                if (result2 == 1)
+	                {
+	                	connection.commit();
+	                	//sets the url for the reimburse object to retrieve the image
+	                	reimburse.setReceipt(url);
+	                	
+	                	return reimburse;
+	                }
+	                else {
+	                	if(connection != null) {
+	                		connection.rollback();
+	                	}
+	                    throw new SQLException();
+	                }
+	            }
             }
             
+        	connection.rollback();
             throw new InvalidUserException();
         }
         catch (SQLException e) {

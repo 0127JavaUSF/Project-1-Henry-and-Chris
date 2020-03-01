@@ -12,7 +12,8 @@ class NavBar {
         myTickets.addEventListener("click", (e)=> {
 
             //show employee section
-            employeeSection.showSection();
+            myTicketsSection.showSection();
+            newTicketSection.showSection();
 
             e.preventDefault();
         });

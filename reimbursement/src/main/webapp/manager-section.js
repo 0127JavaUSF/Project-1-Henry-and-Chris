@@ -140,15 +140,27 @@ class ManagerSection {
         div.appendChild(p);
         p.innerText = ticket.description;
 
-        const imgDiv = document.createElement("div");
-        imgDiv.className = "text-center";
-        div.appendChild(imgDiv);
+        //if receipt
+        if(ticket.receipt && ticket.receipt !== "") {
 
-        const receiptImg = document.createElement("img");
-        imgDiv.appendChild(receiptImg);
-        receiptImg.setAttribute("src", "https://my-project-1-bucket.s3.amazonaws.com/1");
-        receiptImg.setAttribute("alt", "attachment");
+            const imgDiv = document.createElement("div");
+            imgDiv.className = "text-center";
+            div.appendChild(imgDiv);
+
+            const receiptImg = document.createElement("img");
+            imgDiv.appendChild(receiptImg);
+
+            receiptImg.setAttribute("src", ticket.receipt);
+            receiptImg.setAttribute("alt", "Receipt");
         
+            //when image loads
+            receiptImg.addEventListener("load", function() { //arrow function "this" is wrong context. we want the element
+
+                //resize the receipt to 25% of the width of the window
+                shared.resizeImg(this, .25);
+            });
+        }
+
         //if ticket status is PENDING
         if(ticket.statusId === STATUS_PENDING){
 
@@ -202,18 +214,6 @@ class ManagerSection {
                 managerSection.approveDenyRequest(this);
             });
         }
-
-       // when image loads
-        receiptImg.addEventListener("load", function() { //arrow function "this" is wrong context. we want the element
-
-            //resize it to 20% of the width of the window
-            const origWidth = this.width;
-            const newWidth = window.innerWidth * .2;
-            const percent = newWidth / origWidth;
-            
-            this.width *= percent;
-            this.height *= percent;
-        });
     }
 
     approveDenyRequest(button) {
@@ -260,6 +260,23 @@ class ManagerSection {
 
         //replace table row with updated ticket
         managerSection.addRowToManageTable(updatedTicket, rowI, row, subrow);
+
+        myTicketsSection.onResolvedTicket(updatedTicket);
+    }
+
+    //a new ticket was created
+    onNewTicket(ticket) {
+
+        this.tickets.push(ticket);
+
+        //get filter status
+        const filterStatus = document.getElementById("filter_status_select").value;
+
+        //if "None" or "Pending"
+        if(filterStatus == 0 || filterStatus == STATUS_PENDING) {
+            //add new row to table
+            this.addRowToManageTable(ticket);
+        }
     }
 
     //show the manager section
