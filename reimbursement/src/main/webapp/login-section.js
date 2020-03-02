@@ -3,11 +3,60 @@
 
 class LoginSection {
 
+	addUsernameEventListener() {
+
+		$("#username_text").blur((e) => {
+			this.validateUsername();
+		});
+	}
+
+	validateUsername() {
+		let isValid = true;
+		if(!$("#username_text").val()) {
+			isValid = false;
+			$("#username_required").prop("classList").remove("hide");	
+		}
+		else {
+			$("#username_required").prop("classList").add("hide");	
+		}
+		return isValid;
+	}
+
+	addPasswordEventListener() {
+
+		$("#password_text").blur((e) => {
+			this.validatePassword();
+		});
+	}
+
+	validatePassword() {
+		let isValid = true;
+		if(!$("#password_text").val()) {
+			isValid = false;
+			$("#password_required").prop("classList").remove("hide");	
+		}
+		else {
+			$("#password_required").prop("classList").add("hide");	
+		}
+		return isValid;
+	}
+
 	//login button event listener
 	addLoginEventListener() {
 
 		$("#login_button").click((e) => {
 	
+			let isValid = this.validateUsername();
+			if(!isValid) {
+				e.preventDefault();
+				return;
+			}
+			isValid = this.validatePassword();
+			if(!isValid) {
+				e.preventDefault();
+				return;
+			}
+
 			const username = $("#username_text").val();
 			const password = $("#password_text").val();
 	

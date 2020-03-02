@@ -371,6 +371,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if(typeof loginSection !== "undefined") {
 
+        loginSection.addUsernameEventListener();
+
+        loginSection.addPasswordEventListener();
+
         loginSection.addLoginEventListener();
     }
 

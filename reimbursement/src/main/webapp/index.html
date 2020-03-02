@@ -21,7 +21,6 @@
 </head>
 
 <body>
-
 	<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
 		<ul class="navbar-nav">
 			<li id="my_tickets_li" class="nav-item">
@@ -53,9 +52,19 @@
 			<div class="container my-5">
 				<h2 class="text-center">Log in</h2>
 				<div class="form-group mx-auto w-50">
-					<input id="username_text" class="form-control my-3" placeholder="Username" type="text">
-					<input id="password_text" class="form-control my-3" placeholder="Password" type="password">
 
+					<div style="display:flex;">
+						<span class="hide">required</span>
+						<input id="username_text" class="form-control my-3" placeholder="Username" type="text">
+						<span id="username_required" class="error hide my-auto">required</span>
+					</div>
+
+					<div style="display:flex;">
+						<span class="hide">required</span>
+						<input id="password_text" class="form-control my-3" placeholder="Password" type="password">
+						<span id="password_required" class="error hide my-auto">required</span>
+					</div>
+					
 					<div class="text-center">
 						<input id="login_button" class="btn btn-primary revature_orange w-25" type="submit" value="Login">
 						<div id="login_error" class="error hide">error</div>
